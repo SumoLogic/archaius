@@ -30,18 +30,22 @@ trait DynamicPropertyBehaviors[TYPE] extends Eventually with IntegrationPatience
 
   def fixture(name: String): DynamicProperty[TYPE]
 
-  def fixtureWithCallback(name: String, callback: () => Unit): DynamicProperty[TYPE]
+  def fixtureWithCallback(name: String, callback: Runnable): DynamicProperty[TYPE]
 
   // see dynamicProperty(Any, Any, TYPE, TYPE) below
   var directlySetExecutionCount = 0
-  def directlySetCallback() {
-    directlySetExecutionCount += 1
+  val directlySetCallback = new Runnable () {
+    def run () {
+      directlySetExecutionCount += 1
+    }
   }
 
   // see dynamicProperty(Any, Any, TYPE, TYPE) below
   var factorySetExecutionCount = 0
-  def factorySetCallback() {
-    factorySetExecutionCount += 1
+  val factorySetCallback = new Runnable () {
+    def run () {
+      factorySetExecutionCount += 1
+    }
   }
 
   def dynamicProperty(defaultValue: TYPE, configuredValue: TYPE) {

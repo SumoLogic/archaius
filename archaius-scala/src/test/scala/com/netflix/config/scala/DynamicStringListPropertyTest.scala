@@ -24,7 +24,7 @@ class DynamicStringListPropertyTest extends PropertiesTestHelp with Matchers wit
 
   override def fixture(name: String) =
     DynamicStringListProperty(name, List("a", "b", "c"), ",")
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicStringListProperty(name, List("a", "b", "c"), ",", callback)
 
   "DynamicStringListProperty" should {

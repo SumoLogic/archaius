@@ -28,7 +28,7 @@ object DynamicStringSetProperty {
   def apply(propertyName: String, defaultValue: Set[String], delimiterRegex: String) =
     new DynamicStringSetProperty(propertyName, defaultValue, delimiterRegex)
 
-  def apply(propertyName: String, defaultValue: Set[String], delimiterRegex: String, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: Set[String], delimiterRegex: String, callback: Runnable) = {
     val p = new DynamicStringSetProperty(propertyName, defaultValue, delimiterRegex)
     p.addCallback(callback)
     p

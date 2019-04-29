@@ -85,21 +85,10 @@ trait ChainedProperty[TYPE] extends DynamicProperty[TYPE] {
   /**
    * Add a callback to be triggered when the value of the property is
    * changed.
-   * @param callback a function to call on changes.
-   */
-  override def addCallback(callback: () => Unit) {
-    box.addCallback(callback)
-  }
-
-  /**
-   * Add a callback to be triggered when the value of the property is
-   * changed.
    * @param callback a [[java.lang.Runnable]] to call on changes.
    */
-  @deprecated("pass a function instead", "0.6.1")
-  def addCallback(callback: Runnable) {
-    val run: () => Unit = callback.run
-    box.addCallback(run)
+  override def addCallback(callback: Runnable) {
+    box.addCallback(callback)
   }
 
   override def toString: String = s"[${propertyName}] = ${get}"

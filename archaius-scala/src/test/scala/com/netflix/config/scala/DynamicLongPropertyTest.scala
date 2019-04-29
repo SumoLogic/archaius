@@ -24,7 +24,7 @@ class DynamicLongPropertyTest extends PropertiesTestHelp with Matchers with Dyna
 
   override def fixture(name: String) =
     DynamicLongProperty(name, 1l)
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicLongProperty(name, 1l, callback)
 
   "DynamicLongProperty" should {

@@ -24,7 +24,7 @@ class DynamicIntPropertyTest extends PropertiesTestHelp with Matchers with Dynam
 
   override def fixture(name: String) =
     DynamicIntProperty(name, 1)
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicIntProperty(name, 1, callback)
 
   "DynamicIntProperty" should {

@@ -26,7 +26,7 @@ object DynamicStringProperty {
   def apply(propertyName: String, defaultValue: String) =
     new DynamicStringProperty(propertyName, defaultValue)
 
-  def apply(propertyName: String, defaultValue: String, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: String, callback: Runnable) = {
     val p = new DynamicStringProperty(propertyName, defaultValue)
     p.addCallback(callback)
     p

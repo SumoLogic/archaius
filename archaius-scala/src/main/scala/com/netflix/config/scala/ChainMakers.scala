@@ -79,7 +79,7 @@ protected[scala] object ChainMakers {
 
     override def get: B = fn(chainBox.get)
 
-    override def addCallback(callback: () => Unit) {
+    override def addCallback(callback: Runnable) {
       chainBox.addCallback(callback)
     }
 

@@ -25,42 +25,42 @@ object DynamicProperties {
   private val DefaultDelimiterRegex = DynamicListProperty.DEFAULT_DELIMITER
 
   def dynamicIntProperty(propertyName: String, default: Int,
-                         callback: () => Unit = null): DynamicIntProperty = {
+                         callback: Runnable = null): DynamicIntProperty = {
     val prop = new DynamicIntProperty(propertyName, default)
     prop.addCallback(callback)
     prop
   }
 
   def dynamicLongProperty(propertyName: String, default: Long,
-                          callback: () => Unit = null): DynamicLongProperty = {
+                          callback: Runnable = null): DynamicLongProperty = {
     val prop = new DynamicLongProperty(propertyName, default)
     prop.addCallback(callback)
     prop
   }
 
   def dynamicFloatProperty(propertyName: String, default: Float,
-                           callback: () => Unit = null): DynamicFloatProperty = {
+                           callback: Runnable = null): DynamicFloatProperty = {
     val prop = new DynamicFloatProperty(propertyName, default)
     prop.addCallback(callback)
     prop
   }
 
   def dynamicDoubleProperty(propertyName: String, default: Double,
-                            callback: () => Unit = null): DynamicDoubleProperty = {
+                            callback: Runnable = null): DynamicDoubleProperty = {
     val prop = new DynamicDoubleProperty(propertyName, default)
     prop.addCallback(callback)
     prop
   }
 
   def dynamicBooleanProperty(propertyName: String, default: Boolean,
-                             callback: () => Unit = null): DynamicBooleanProperty = {
+                             callback: Runnable = null): DynamicBooleanProperty = {
     val prop = new DynamicBooleanProperty(propertyName, default)
     prop.addCallback(callback)
     prop
   }
 
   def dynamicStringProperty(propertyName: String, default: String,
-                            callback: () => Unit = null): DynamicStringProperty = {
+                            callback: Runnable = null): DynamicStringProperty = {
     val prop = new DynamicStringProperty(propertyName, default)
     prop.addCallback(callback)
     prop
@@ -69,7 +69,7 @@ object DynamicProperties {
   def dynamicStringListProperty(propertyName: String,
                                 default: List[String],
                                 delimiterRegex: String = DefaultDelimiterRegex,
-                                callback: () => Unit = null): DynamicStringListProperty = {
+                                callback: Runnable = null): DynamicStringListProperty = {
     val prop = new DynamicStringListProperty(propertyName, default, delimiterRegex)
     prop.addCallback(callback)
     prop
@@ -78,7 +78,7 @@ object DynamicProperties {
   def dynamicStringSetProperty(propertyName: String,
                                default: Set[String],
                                delimiterRegex: String = DefaultDelimiterRegex,
-                               callback: () => Unit = null): DynamicStringSetProperty = {
+                               callback: Runnable = null): DynamicStringSetProperty = {
     val prop = new DynamicStringSetProperty(propertyName, default, delimiterRegex)
     prop.addCallback(callback)
     prop
@@ -87,14 +87,14 @@ object DynamicProperties {
   def dynamicStringMapProperty(propertyName: String,
                                default: Map[String, String],
                                delimiterRegex: String = DefaultDelimiterRegex,
-                               callback: () => Unit = null): DynamicStringMapProperty = {
+                               callback: Runnable = null): DynamicStringMapProperty = {
     val prop = new DynamicStringMapProperty(propertyName, default, delimiterRegex)
     prop.addCallback(callback)
     prop
   }
 
   def dynamicContextualProperty[T](propertyName: String, default: T,
-                                   callback: () => Unit = null): DynamicContextualProperty[T] = {
+                                   callback: Runnable = null): DynamicContextualProperty[T] = {
     val prop = new DynamicContextualProperty[T](propertyName, default)
     prop.addCallback(callback)
     prop

@@ -21,7 +21,7 @@ object DynamicContextualProperty {
   def apply[T](propertyName: String, defaultValue: T) =
     new DynamicContextualProperty(propertyName, defaultValue)
 
-  def apply[T](propertyName: String, defaultValue: T, callback: () => Unit) = {
+  def apply[T](propertyName: String, defaultValue: T, callback: Runnable) = {
     val p = new DynamicContextualProperty(propertyName, defaultValue)
     p.addCallback(callback)
     p

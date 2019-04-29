@@ -24,7 +24,7 @@ class DynamicStringSetPropertyTest extends PropertiesTestHelp with Matchers with
 
   override def fixture(name: String) =
     DynamicStringSetProperty(name, Set("a", "b", "c"), ",")
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicStringSetProperty(name, Set("a", "b", "c"), ",", callback)
 
   "DynamicStringSetProperty" should {

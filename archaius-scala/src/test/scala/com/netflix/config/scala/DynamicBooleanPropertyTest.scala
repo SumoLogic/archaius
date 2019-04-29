@@ -31,7 +31,7 @@ class DynamicBooleanPropertyTest extends PropertiesTestHelp with Matchers with D
 
   override def fixture(name: String) =
     DynamicBooleanProperty(name, true)
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicBooleanProperty(name, true, callback)
 
   "DynamicBooleanProperty" should {

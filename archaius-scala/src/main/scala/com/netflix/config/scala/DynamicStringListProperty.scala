@@ -27,7 +27,7 @@ object DynamicStringListProperty {
   def apply(propertyName: String, defaultValue: List[String], delimiterRegex: String) =
     new DynamicStringListProperty(propertyName, defaultValue, delimiterRegex)
 
-  def apply(propertyName: String, defaultValue: List[String], delimiterRegex: String, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: List[String], delimiterRegex: String, callback: Runnable) = {
     val p = new DynamicStringListProperty(propertyName, defaultValue, delimiterRegex)
     p.addCallback(callback)
     p
