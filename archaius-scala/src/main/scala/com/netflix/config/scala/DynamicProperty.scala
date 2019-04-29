@@ -42,7 +42,7 @@ trait DynamicProperty[T] {
    * and so may not be null.
    * @return the value retrieved from the property.
    */
-  def get: T = box.get
+  def get(): T = box.get
 
   /**
    * Produce the current value of the property, as an [[scala.Option]].  Null
