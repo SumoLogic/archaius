@@ -22,11 +22,11 @@ import com.netflix.config.{DynamicIntProperty => JavaDynamicIntProperty}
 class ChainedIntProperty(
   override val propertyNames: Iterable[String],
   override val defaultValue: Int,
-  callback: Option[() => Unit] = None)
+  callback: Option[Runnable] = None)
 extends ChainedProperty[Int]
 {
 
-  def this(prefix: Option[String], name: String, suffix: Option[String], default: Int, callback: Option[() => Unit]) = {
+  def this(prefix: Option[String], name: String, suffix: Option[String], default: Int, callback: Option[Runnable]) = {
     this(ChainMakers.fanPropertyName(prefix, name, suffix), default, callback)
   }
 

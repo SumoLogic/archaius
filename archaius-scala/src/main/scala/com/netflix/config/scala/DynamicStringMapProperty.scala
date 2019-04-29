@@ -27,7 +27,7 @@ object DynamicStringMapProperty {
   def apply(propertyName: String, defaultValue: Map[String, String], delimiterRegex: String) =
     new DynamicStringMapProperty(propertyName, defaultValue, delimiterRegex)
 
-  def apply(propertyName: String, defaultValue: Map[String, String], delimiterRegex: String, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: Map[String, String], delimiterRegex: String, callback: Runnable) = {
     val p = new DynamicStringMapProperty(propertyName, defaultValue, delimiterRegex)
     p.addCallback(callback)
     p
@@ -45,8 +45,8 @@ extends DynamicProperty[Map[String, String]]
     val mapProp = new jDynamicStringMapProperty(propertyName, defaultValue.asJava, delimiterRegex)
     override def get: Map[String, String] = convert(mapProp.getMap)
     override def apply(): Option[Map[String, String]] = Option(mapProp.getMap).map(convert)
-    override def addCallback(callback: () => Unit) {
-      mapProp.addCallback( CallbackWrapper( callback ) )
+    override def addCallback(callback: Runnable) {
+      mapProp.addCallback( callback )
     }
     override def removeAllCallbacks() {
       mapProp.removeAllCallbacks()

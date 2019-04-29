@@ -26,7 +26,7 @@ object DynamicLongProperty {
   def apply(propertyName: String, defaultValue: Long) =
     new DynamicLongProperty(propertyName, defaultValue)
 
-  def apply(propertyName: String, defaultValue: Long, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: Long, callback: Runnable) = {
     val p = new DynamicLongProperty(propertyName, defaultValue)
     p.addCallback(callback)
     p

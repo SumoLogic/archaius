@@ -24,7 +24,7 @@ class DynamicFloatPropertyTest extends PropertiesTestHelp with Matchers with Dyn
 
   override def fixture(name: String) =
     DynamicFloatProperty(name, 1.0f)
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicFloatProperty(name, 1.0f, callback)
 
   "DynamicFloatProperty" should {

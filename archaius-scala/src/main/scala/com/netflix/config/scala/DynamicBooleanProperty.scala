@@ -26,7 +26,7 @@ object DynamicBooleanProperty {
   def apply(propertyName: String, defaultValue: Boolean) =
     new DynamicBooleanProperty(propertyName, defaultValue)
 
-  def apply(propertyName: String, defaultValue: Boolean, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: Boolean, callback: Runnable) = {
     val p = new DynamicBooleanProperty(propertyName, defaultValue)
     p.addCallback(callback)
     p

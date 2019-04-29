@@ -26,7 +26,7 @@ object DynamicIntProperty {
   def apply(propertyName: String, defaultValue: Int) =
     new DynamicIntProperty(propertyName, defaultValue)
 
-  def apply(propertyName: String, defaultValue: Int, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: Int, callback: Runnable) = {
     val p = new DynamicIntProperty(propertyName, defaultValue)
     p.addCallback(callback)
     p

@@ -42,7 +42,7 @@ trait DynamicProperty[T] {
    * and so may not be null.
    * @return the value retrieved from the property.
    */
-  def get: T = box.get
+  def get(): T = box.get
 
   /**
    * Produce the current value of the property, as an [[scala.Option]].  Null
@@ -64,7 +64,7 @@ trait DynamicProperty[T] {
    * changed.
    * @param callback a function to call on changes.
    */
-  def addCallback(callback: () => Unit) {
+  def addCallback(callback: Runnable): Unit = {
     box.addCallback(callback)
   }
 
@@ -81,20 +81,14 @@ trait DynamicProperty[T] {
   protected val box: PropertyBox[T, _]
 }
 
-protected[scala] case class CallbackWrapper(callback: () => Unit) extends Runnable {
-  override def run() {
-    callback()
-  }
-}
-
 protected[scala] abstract class PropertyBox[T, JT] {
   protected def prop: Property[JT]
   def name: String = prop.getName
   def get: T = convert(prop.getValue)
   def apply(): Option[T] = Option(prop.getValue).map(convert)
   def default: T = convert(prop.getDefaultValue)
-  def addCallback(callback: () => Unit) {
-    prop.addCallback( CallbackWrapper( callback ) )
+  def addCallback(runnable: Runnable): Unit = {
+    prop.addCallback(runnable)
   }
   def removeAllCallbacks() {
     prop.removeAllCallbacks()
@@ -116,8 +110,8 @@ protected[this] class BoxConverter[B, TYPE](propertyBox: PropertyBox[TYPE,AnyRef
 
   override def get: B = fn(propertyBox.get)
 
-  override def addCallback(callback: () => Unit) {
-    propertyBox.addCallback(callback)
+  override def addCallback(runnable: Runnable) {
+    propertyBox.addCallback(runnable)
   }
 
   override def name: String = propertyBox.name

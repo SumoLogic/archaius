@@ -24,7 +24,7 @@ class DynamicStringMapPropertyTest extends PropertiesTestHelp with Matchers with
 
   override def fixture(name: String) =
     DynamicStringMapProperty(name, Map("a" -> "x", "b" -> "y", "c" -> "z"), ",")
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicStringMapProperty(name, Map("a" -> "x", "b" -> "y", "c" -> "z"), ",", callback)
 
   "DynamicStringMapProperty" should {

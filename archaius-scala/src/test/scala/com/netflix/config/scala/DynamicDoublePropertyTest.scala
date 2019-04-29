@@ -24,7 +24,7 @@ class DynamicDoublePropertyTest extends PropertiesTestHelp with Matchers with Dy
 
   override def fixture(name: String) =
     DynamicDoubleProperty(name, 1.0d)
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicDoubleProperty(name, 1.0d, callback)
 
   "DynamicDoubleProperty" should {

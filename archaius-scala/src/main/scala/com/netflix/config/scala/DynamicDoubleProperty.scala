@@ -26,7 +26,7 @@ object DynamicDoubleProperty {
   def apply(propertyName: String, defaultValue: Double) =
     new DynamicDoubleProperty(propertyName, defaultValue)
 
-  def apply(propertyName: String, defaultValue: Double, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: Double, callback: Runnable) = {
     val p = new DynamicDoubleProperty(propertyName, defaultValue)
     p.addCallback(callback)
     p

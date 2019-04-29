@@ -26,7 +26,7 @@ object DynamicFloatProperty {
   def apply(propertyName: String, defaultValue: Float) =
     new DynamicFloatProperty(propertyName, defaultValue)
 
-  def apply(propertyName: String, defaultValue: Float, callback: () => Unit) = {
+  def apply(propertyName: String, defaultValue: Float, callback: Runnable) = {
     val p = new DynamicFloatProperty(propertyName, defaultValue)
     p.addCallback(callback)
     p

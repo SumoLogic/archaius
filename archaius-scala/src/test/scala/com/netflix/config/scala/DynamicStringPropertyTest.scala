@@ -24,7 +24,7 @@ class DynamicStringPropertyTest extends PropertiesTestHelp with Matchers with Dy
 
   override def fixture(name: String) =
     DynamicStringProperty(name, "default")
-  override def fixtureWithCallback(name: String, callback: () => Unit) =
+  override def fixtureWithCallback(name: String, callback: Runnable) =
     DynamicStringProperty(name, "default", callback)
 
   "DynamicStringProperty" should {
