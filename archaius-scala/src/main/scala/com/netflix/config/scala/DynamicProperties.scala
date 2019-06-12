@@ -17,11 +17,7 @@ package com.netflix.config.scala
 
 import com.netflix.config.DynamicListProperty
 
-/**
- * @deprecated Use the factory methods for each class instead of this central factory.
- */
-@deprecated("Use the factory methods for each class instead of this central factory.", "0.6.1")
-object DynamicProperties {
+trait DynamicProperties {
   private val DefaultDelimiterRegex = DynamicListProperty.DEFAULT_DELIMITER
 
   def dynamicIntProperty(propertyName: String, default: Int,
@@ -100,3 +96,5 @@ object DynamicProperties {
     prop
   }
 }
+
+object DynamicProperties extends DynamicProperties
