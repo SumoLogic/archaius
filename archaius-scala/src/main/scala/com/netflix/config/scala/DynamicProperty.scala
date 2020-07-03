@@ -72,11 +72,11 @@ trait DynamicProperty[T] {
    * Remove all callbacks to be triggered when the value of the property is
    * changed.
    */
-  def removeAllCallbacks() {
+  def removeAllCallbacks(): Unit = {
     box.removeAllCallbacks()
   }
 
-  override def toString: String = s"[${propertyName}] = ${get}"
+  override def toString: String = s"[$propertyName] = ${get()}"
 
   protected val box: PropertyBox[T, _]
 }
@@ -90,7 +90,7 @@ protected[scala] abstract class PropertyBox[T, JT] {
   def addCallback(runnable: Runnable): Unit = {
     prop.addCallback(runnable)
   }
-  def removeAllCallbacks() {
+  def removeAllCallbacks(): Unit = {
     prop.removeAllCallbacks()
   }
   protected def convert(jt: JT): T
@@ -110,7 +110,7 @@ protected[this] class BoxConverter[B, TYPE](propertyBox: PropertyBox[TYPE,AnyRef
 
   override def get: B = fn(propertyBox.get)
 
-  override def addCallback(runnable: Runnable) {
+  override def addCallback(runnable: Runnable): Unit = {
     propertyBox.addCallback(runnable)
   }
 
