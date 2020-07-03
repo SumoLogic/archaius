@@ -37,7 +37,7 @@ trait ChainedProperty[TYPE] extends DynamicProperty[TYPE] {
    * and so may not be null.
    * @return the value derived from the chain of properties.
    */
-  override def get: TYPE = box.get
+  override def get(): TYPE = box.get
 
   /**
    * Produce the most-appropriate current value of the chain of properties, as an [[scala.Option]].  Null
@@ -87,9 +87,9 @@ trait ChainedProperty[TYPE] extends DynamicProperty[TYPE] {
    * changed.
    * @param callback a [[java.lang.Runnable]] to call on changes.
    */
-  override def addCallback(callback: Runnable) {
+  override def addCallback(callback: Runnable): Unit = {
     box.addCallback(callback)
   }
 
-  override def toString: String = s"[${propertyName}] = ${get}"
+  override def toString: String = s"[$propertyName] = ${get()}"
 }
