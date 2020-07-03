@@ -43,6 +43,6 @@ extends DynamicProperty[Set[String]]
 {
   override protected val box = new PropertyBox[Set[String], jSet[jString]] {
     override val prop: Property[jSet[jString]]= new jDynamicStringSetProperty(propertyName, defaultValue.asJava, delimiterRegex)
-    def convert(jt: jSet[String]): Set[String] = jt.asScala.map(x => x)(scala.collection.breakOut)
+    def convert(jt: jSet[String]): Set[String] = jt.asScala.view.map(x => x).toSet
   }
 }
