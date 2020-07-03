@@ -52,14 +52,14 @@ trait ChainedProperty[TYPE] extends DynamicProperty[TYPE] {
    * @param fn the transformation function which produces the new type.
    * @return a new ChainedProperty for the target type.
    */
-  override def map[B](fn: (TYPE) => B)(implicit mapType: Manifest[B]): ChainedProperty[B] = new MapChainBy(box, fn, mapType)
+  override def map[B](fn: (TYPE) => B)(implicit mapType: Manifest[B]): ChainedProperty[B] = new MapChainBy(box, fn, mapType, this)
 
-  protected[this] class MapChainBy[B, TYPE](unmappedBox: ChainBox[TYPE, _], fn: (TYPE) => B, mapType: Manifest[B])
+  protected[this] class MapChainBy[B, TYPE](unmappedBox: ChainBox[TYPE, _], fn: (TYPE) => B, mapType: Manifest[B], self: ChainedProperty[TYPE])
   extends ChainedProperty[B]
   {
     override protected val box = new ChainBoxConverter[B, TYPE](unmappedBox, fn, mapType)
 
-    override def propertyNames: Iterable[String] = propertyNames
+    override def propertyNames: Iterable[String] = self.propertyNames
   }
 
   /**
