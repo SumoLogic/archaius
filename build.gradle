@@ -157,7 +157,7 @@ project(':archaius-scala') {
     dependencies {
         compile project(':archaius-core')
         compile 'org.scala-lang:scala-library:2.10.4'
-        testCompile 'org.scalatest:scalatest_2.10:3.0.2'
+        testCompile 'org.scalatest:scalatest_2.10:3.0.8'
         testCompile 'junit:junit:4.11'
     }
 }
@@ -173,7 +173,7 @@ project(':archaius-scala_2.11') {
     dependencies {
         compile project(':archaius-core')
         compile 'org.scala-lang:scala-library:2.11.11'
-        testCompile 'org.scalatest:scalatest_2.11:3.0.2'
+        testCompile 'org.scalatest:scalatest_2.11:3.0.8'
         testCompile 'junit:junit:4.11'
     }
 }
@@ -188,8 +188,8 @@ project(':archaius-scala_2.12') {
 
     dependencies {
         compile project(':archaius-core')
-        compile 'org.scala-lang:scala-library:2.12.2'
-        testCompile 'org.scalatest:scalatest_2.12:3.0.2'
+        compile 'org.scala-lang:scala-library:2.12.11'
+        testCompile 'org.scalatest:scalatest_2.12:3.0.8'
         testCompile 'junit:junit:4.11'
     }
 }
