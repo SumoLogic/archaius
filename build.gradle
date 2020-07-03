@@ -194,6 +194,22 @@ project(':archaius-scala_2.12') {
     }
 }
 
+project(':archaius-scala_2.13') {
+    apply plugin: 'scala'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    buildDir = 'build_2.13'
+
+    dependencies {
+        compile project(':archaius-core')
+        compile 'org.scala-lang:scala-library:2.13.3'
+        testCompile 'org.scalatest:scalatest_2.13:3.0.8'
+        testCompile 'junit:junit:4.11'
+    }
+}
+
 
 project(':archaius-samplelibrary') {
     apply plugin: 'scala'
