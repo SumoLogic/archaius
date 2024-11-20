@@ -63,7 +63,7 @@ subprojects {
         publications {
             maven(MavenPublication) {
                 groupId = 'com.netflix.archaius'
-                version = '0.7.6.SUMO-6'
+                version = '0.7.6.SUMO-7'
 
                 artifact jar
                 artifact sourcesJar
@@ -136,8 +136,8 @@ project(':archaius-zookeeper') {
 }
 
 project(':archaius-etcd') {
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     dependencies {
         compile project(':archaius-core')
@@ -163,8 +163,8 @@ project(':archaius-scala') {
 project(':archaius-scala_2.11') {
     apply plugin: 'scala'
 
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     buildDir = 'build_2.11'
 
