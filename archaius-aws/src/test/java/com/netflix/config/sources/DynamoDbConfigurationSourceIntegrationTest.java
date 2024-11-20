@@ -15,17 +15,15 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.netflix.config.PollResult;
-
-import static com.netflix.config.sources.DynamoDbIntegrationTestHelper.*;
-import static org.junit.Assert.assertEquals;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
+import static com.netflix.config.sources.DynamoDbIntegrationTestHelper.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * User: gorzell
@@ -33,12 +31,12 @@ import org.junit.Test;
  */
 public class DynamoDbConfigurationSourceIntegrationTest {
     private static final String tableName = DynamoDbConfigurationSource.defaultTable + "UNITTEST";
-    private static AmazonDynamoDB dbClient;
+    private static DynamoDbClient dbClient;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         try {
-            dbClient = new AmazonDynamoDBClient(new DefaultAWSCredentialsProviderChain().getCredentials());
+            dbClient = DynamoDbClient.builder().credentialsProvider(DefaultCredentialsProvider.create()).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,10 +52,10 @@ public class DynamoDbConfigurationSourceIntegrationTest {
         if (dbClient != null) removeTable(dbClient, tableName);
     }
 
-    //@Test
+    // @Test // disabled as it requires additional setup
     public void testPoll() throws Exception {
         if (dbClient != null) {
-            DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource();
+            DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(dbClient);
             PollResult result = testConfigSource.poll(true, null);
             assertEquals(3, result.getComplete().size());
             assertEquals("val1", result.getComplete().get("test1"));
@@ -66,10 +64,10 @@ public class DynamoDbConfigurationSourceIntegrationTest {
         }
     }
 
-    //@Test
+    // @Test // disabled as it requires additional setup
     public void testUpdate() throws Exception {
         if (dbClient != null) {
-            DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource();
+            DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(dbClient);
 
             PollResult result = testConfigSource.poll(true, null);
             assertEquals(3, result.getComplete().size());

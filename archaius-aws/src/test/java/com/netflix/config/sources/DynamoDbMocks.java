@@ -15,8 +15,8 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,65 +38,65 @@ public class DynamoDbMocks {
 
     public static final Collection<Map<String, AttributeValue>> basicResultValues1 = new LinkedList<Map<String, AttributeValue>>();
     public static final Collection<Map<String, AttributeValue>> basicResultValues2 = new LinkedList<Map<String, AttributeValue>>();
-    public static final ScanResult basicScanResult1;
-    public static final ScanResult basicScanResult2;
+    public static final ScanResponse basicScanResult1;
+    public static final ScanResponse basicScanResult2;
 
     public static final Collection<Map<String, AttributeValue>> contextResultValues1 = new LinkedList<Map<String, AttributeValue>>();
     public static final Collection<Map<String, AttributeValue>> contextResultValues2 = new LinkedList<Map<String, AttributeValue>>();
-    public static final ScanResult contextScanResult1;
-    public static final ScanResult contextScanResult2;
+    public static final ScanResponse contextScanResult1;
+    public static final ScanResponse contextScanResult2;
 
 
     static {
         //Basic results config
         Map<String, AttributeValue> basicRow1 = new HashMap<String, AttributeValue>();
-        basicRow1.put(defaultKeyAttribute, new AttributeValue().withS("foo"));
-        basicRow1.put(defaultValueAttribute, new AttributeValue().withS("bar"));
+        basicRow1.put(defaultKeyAttribute, AttributeValue.builder().s("foo").build());
+        basicRow1.put(defaultValueAttribute, AttributeValue.builder().s("bar").build());
         basicResultValues1.add(basicRow1);
 
         Map<String, AttributeValue> basicRow2 = new HashMap<String, AttributeValue>();
-        basicRow2.put(defaultKeyAttribute, new AttributeValue().withS("goo"));
-        basicRow2.put(defaultValueAttribute, new AttributeValue().withS("goo"));
+        basicRow2.put(defaultKeyAttribute, AttributeValue.builder().s("goo").build());
+        basicRow2.put(defaultValueAttribute, AttributeValue.builder().s("goo").build());
         basicResultValues1.add(basicRow2);
 
         Map<String, AttributeValue> basicRow3 = new HashMap<String, AttributeValue>();
-        basicRow3.put(defaultKeyAttribute, new AttributeValue().withS("boo"));
-        basicRow3.put(defaultValueAttribute, new AttributeValue().withS("who"));
+        basicRow3.put(defaultKeyAttribute, AttributeValue.builder().s("boo").build());
+        basicRow3.put(defaultValueAttribute, AttributeValue.builder().s("who").build());
         basicResultValues1.add(basicRow3);
 
         //Result2
         Map<String, AttributeValue> updatedBasicRow = new HashMap<String, AttributeValue>();
-        updatedBasicRow.put(defaultKeyAttribute, new AttributeValue().withS("goo"));
-        updatedBasicRow.put(defaultValueAttribute, new AttributeValue().withS("foo"));
+        updatedBasicRow.put(defaultKeyAttribute, AttributeValue.builder().s("goo").build());
+        updatedBasicRow.put(defaultValueAttribute, AttributeValue.builder().s("foo").build());
         basicResultValues2.add(updatedBasicRow);
 
         basicResultValues2.add(basicRow1);
         basicResultValues2.add(updatedBasicRow);
         basicResultValues2.add(basicRow3);
 
-        basicScanResult1 = new ScanResult().withItems(basicResultValues1).withLastEvaluatedKey(null);
-        basicScanResult2 = new ScanResult().withItems(basicResultValues2).withLastEvaluatedKey(null);
+        basicScanResult1 = ScanResponse.builder().items(basicResultValues1).lastEvaluatedKey(null).build();
+        basicScanResult2 = ScanResponse.builder().items(basicResultValues2).lastEvaluatedKey(null).build();
 
         //DeploymentContext results config
         Map<String, AttributeValue> contextRow1 = new HashMap<String, AttributeValue>();
-        contextRow1.put(defaultKeyAttribute, new AttributeValue().withS("foo"));
-        contextRow1.put(defaultValueAttribute, new AttributeValue().withS("bar"));
-        contextRow1.put(defaultContextKeyAttribute, new AttributeValue().withS("environment"));
-        contextRow1.put(defaultContextValueAttribute, new AttributeValue().withS("test"));
+        contextRow1.put(defaultKeyAttribute, AttributeValue.builder().s("foo").build());
+        contextRow1.put(defaultValueAttribute, AttributeValue.builder().s("bar").build());
+        contextRow1.put(defaultContextKeyAttribute, AttributeValue.builder().s("environment").build());
+        contextRow1.put(defaultContextValueAttribute, AttributeValue.builder().s("test").build());
         contextResultValues1.add(contextRow1);
 
         Map<String, AttributeValue> contextRow2 = new HashMap<String, AttributeValue>();
-        contextRow2.put(defaultKeyAttribute, new AttributeValue().withS("goo"));
-        contextRow2.put(defaultValueAttribute, new AttributeValue().withS("goo"));
-        contextRow2.put(defaultContextKeyAttribute, new AttributeValue().withS("environment"));
-        contextRow2.put(defaultContextValueAttribute, new AttributeValue().withS("test"));
+        contextRow2.put(defaultKeyAttribute, AttributeValue.builder().s("goo").build());
+        contextRow2.put(defaultValueAttribute, AttributeValue.builder().s("goo").build());
+        contextRow2.put(defaultContextKeyAttribute, AttributeValue.builder().s("environment").build());
+        contextRow2.put(defaultContextValueAttribute, AttributeValue.builder().s("test").build());
         contextResultValues1.add(contextRow2);
 
         Map<String, AttributeValue> contextRow3 = new HashMap<String, AttributeValue>();
-        contextRow3.put(defaultKeyAttribute, new AttributeValue().withS("boo"));
-        contextRow3.put(defaultValueAttribute, new AttributeValue().withS("who"));
-        contextRow3.put(defaultContextKeyAttribute, new AttributeValue().withS("environment"));
-        contextRow3.put(defaultContextValueAttribute, new AttributeValue().withS("test"));
+        contextRow3.put(defaultKeyAttribute, AttributeValue.builder().s("boo").build());
+        contextRow3.put(defaultValueAttribute, AttributeValue.builder().s("who").build());
+        contextRow3.put(defaultContextKeyAttribute, AttributeValue.builder().s("environment").build());
+        contextRow3.put(defaultContextValueAttribute, AttributeValue.builder().s("test").build());
         contextResultValues1.add(contextRow3);
 
         contextResultValues1.add(basicRow1);
@@ -106,23 +106,23 @@ public class DynamoDbMocks {
         contextResultValues2.add(contextRow3);
 
         Map<String, AttributeValue> contextRow4 = new HashMap<String, AttributeValue>();
-        contextRow4.put(defaultKeyAttribute, new AttributeValue().withS("goo"));
-        contextRow4.put(defaultValueAttribute, new AttributeValue().withS("foo"));
-        contextRow4.put(defaultContextKeyAttribute, new AttributeValue().withS("environment"));
-        contextRow4.put(defaultContextValueAttribute, new AttributeValue().withS("prod"));
+        contextRow4.put(defaultKeyAttribute, AttributeValue.builder().s("goo").build());
+        contextRow4.put(defaultValueAttribute, AttributeValue.builder().s("foo").build());
+        contextRow4.put(defaultContextKeyAttribute, AttributeValue.builder().s("environment").build());
+        contextRow4.put(defaultContextValueAttribute, AttributeValue.builder().s("prod").build());
         contextResultValues2.add(contextRow4);
 
         Map<String, AttributeValue> updatedContextRow = new HashMap<String, AttributeValue>();
-        updatedContextRow.put(defaultKeyAttribute, new AttributeValue().withS("goo"));
-        updatedContextRow.put(defaultValueAttribute, new AttributeValue().withS("foo"));
-        updatedContextRow.put(defaultContextKeyAttribute, new AttributeValue().withS("environment"));
-        updatedContextRow.put(defaultContextValueAttribute, new AttributeValue().withS("test"));
+        updatedContextRow.put(defaultKeyAttribute, AttributeValue.builder().s("goo").build());
+        updatedContextRow.put(defaultValueAttribute, AttributeValue.builder().s("foo").build());
+        updatedContextRow.put(defaultContextKeyAttribute, AttributeValue.builder().s("environment").build());
+        updatedContextRow.put(defaultContextValueAttribute, AttributeValue.builder().s("test").build());
         contextResultValues2.add(updatedContextRow);
 
         contextResultValues2.add(basicRow1);
 
         //Create results from initialized values
-        contextScanResult1 = new ScanResult().withItems(contextResultValues1);
-        contextScanResult2 = new ScanResult().withItems(contextResultValues2);
+        contextScanResult1 = ScanResponse.builder().items(contextResultValues1).lastEvaluatedKey(null).build();
+        contextScanResult2 = ScanResponse.builder().items(contextResultValues2).lastEvaluatedKey(null).build();
     }
 }

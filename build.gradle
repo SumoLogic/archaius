@@ -12,8 +12,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
 
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     repositories {
         jcenter()
@@ -42,7 +42,6 @@ subprojects {
 
     tasks.withType(Test) { forkEvery = 1 }
     test {
-        jvmArgs += [ "-XX:MaxPermSize=512m" ] // for archaius-scala
         maxHeapSize = '2g' // or however much memory the tests need
         testLogging {
             events 'started', 'failed', 'passed', 'skipped'
@@ -94,9 +93,8 @@ project(':archaius-core') {
 project(':archaius-aws') {
     dependencies {
         compile project(':archaius-core')
-        compile 'com.amazonaws:aws-java-sdk-core:1.9.3'
-        compile 'com.amazonaws:aws-java-sdk-dynamodb:1.9.3'
-        compile 'com.amazonaws:aws-java-sdk-s3:1.9.3'
+        compile("software.amazon.awssdk:dynamodb:2.29.17")
+        compile("software.amazon.awssdk:s3:2.29.17")
         testCompile 'junit:junit:4.11'
         testCompile 'org.mockito:mockito-all:1.9.5'
         testCompile 'org.slf4j:slf4j-simple:1.6.4'

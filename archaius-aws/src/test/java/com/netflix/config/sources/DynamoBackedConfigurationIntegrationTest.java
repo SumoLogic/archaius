@@ -15,19 +15,14 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-
-import static com.netflix.config.sources.DynamoDbIntegrationTestHelper.*;
-
 import com.netflix.config.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-
-
+import static com.netflix.config.sources.DynamoDbIntegrationTestHelper.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -36,12 +31,12 @@ import static org.junit.Assert.assertEquals;
  */
 public class DynamoBackedConfigurationIntegrationTest {
     private static final String tableName = DynamoDbConfigurationSource.defaultTable + "UNITTEST";
-    private static AmazonDynamoDB dbClient;
+    private static DynamoDbClient dbClient;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         try {
-            dbClient = new AmazonDynamoDBClient(new DefaultAWSCredentialsProviderChain().getCredentials());
+            dbClient = DynamoDbClient.builder().credentialsProvider(DefaultCredentialsProvider.create()).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,7 +52,7 @@ public class DynamoBackedConfigurationIntegrationTest {
         if (dbClient != null) removeTable(dbClient, tableName);
     }
 
-    //@Test
+    // @Test // disabled as it requires additional setup
     public void testPropertyChange() throws Exception{
         System.setProperty("com.netflix.config.dynamo.tableName", tableName);
         if (dbClient != null) {

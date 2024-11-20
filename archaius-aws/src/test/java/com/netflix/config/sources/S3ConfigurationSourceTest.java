@@ -1,26 +1,29 @@
 
 package com.netflix.config.sources;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AnonymousAWSCredentials;
-import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.S3ClientOptions;
 import com.netflix.config.PollResult;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class S3ConfigurationSourceTest {
 
@@ -28,7 +31,7 @@ public class S3ConfigurationSourceTest {
     final static Object CHECK_POINT = null;
 
     HttpServer fakeS3;
-    AmazonS3Client client;
+    S3Client client;
 
     public S3ConfigurationSourceTest() {
     }
@@ -36,9 +39,12 @@ public class S3ConfigurationSourceTest {
     @Before
     public void setup() throws Exception {
         fakeS3 = createHttpServer();
-        client = new AmazonS3Client(new StaticCredentialsProvider(new AnonymousAWSCredentials()));
-        client.setS3ClientOptions(new S3ClientOptions().withPathStyleAccess(true));
-        client.setEndpoint("http://localhost:8069");
+        client = S3Client.builder()
+                .credentialsProvider(AnonymousCredentialsProvider.create())
+                .forcePathStyle(true)
+                .region(Region.US_EAST_1)
+                .endpointOverride(new URI("http://localhost:8069"))
+                .build();
     }
 
     @After
@@ -56,7 +62,7 @@ public class S3ConfigurationSourceTest {
         assertEquals(1,result.getComplete().size());
     }
 
-    @Test(expected=AmazonServiceException.class)
+    @Test(expected = AwsServiceException.class)
     public void testPoll_fileNotFound() throws Exception {
         S3ConfigurationSource instance = new S3ConfigurationSource(client, "bucketname", "404.txt");
         PollResult result = instance.poll(INITIAL, CHECK_POINT);
@@ -106,5 +112,4 @@ public class S3ConfigurationSourceTest {
         httpServer.start();
         return httpServer;
     }
-
 }

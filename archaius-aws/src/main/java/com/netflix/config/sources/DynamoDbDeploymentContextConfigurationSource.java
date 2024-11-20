@@ -16,7 +16,6 @@
 package com.netflix.config.sources;
 
 import com.netflix.config.*;
-import org.apache.commons.configuration.AbstractConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;

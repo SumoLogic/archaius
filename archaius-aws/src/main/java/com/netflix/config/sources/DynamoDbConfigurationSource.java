@@ -15,20 +15,14 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 import com.netflix.config.PollResult;
 import com.netflix.config.PolledConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,31 +36,7 @@ import java.util.Map;
 public class DynamoDbConfigurationSource extends AbstractDynamoDbConfigurationSource<Object> implements PolledConfigurationSource {
     private static final Logger log = LoggerFactory.getLogger(DynamoDbConfigurationSource.class);
 
-    public DynamoDbConfigurationSource() {
-        super();
-    }
-
-    public DynamoDbConfigurationSource(ClientConfiguration clientConfiguration) {
-        super(clientConfiguration);
-    }
-
-    public DynamoDbConfigurationSource(AWSCredentials credentials) {
-        super(credentials);
-    }
-
-    public DynamoDbConfigurationSource(AWSCredentials credentials, ClientConfiguration clientConfiguration) {
-        super(credentials, clientConfiguration);
-    }
-
-    public DynamoDbConfigurationSource(AWSCredentialsProvider credentialsProvider) {
-        super(credentialsProvider);
-    }
-
-    public DynamoDbConfigurationSource(AWSCredentialsProvider credentialsProvider, ClientConfiguration clientConfiguration) {
-        super(credentialsProvider, clientConfiguration);
-    }
-
-    public DynamoDbConfigurationSource(AmazonDynamoDB dbClient) {
+    public DynamoDbConfigurationSource(DynamoDbClient dbClient) {
         super(dbClient);
     }
 
@@ -75,15 +45,16 @@ public class DynamoDbConfigurationSource extends AbstractDynamoDbConfigurationSo
         Map<String, Object> propertyMap = new HashMap<String, Object>();
         Map<String, AttributeValue> lastKeysEvaluated = null;
         do {
-            ScanRequest scanRequest = new ScanRequest()
-                    .withTableName(table)
-                    .withExclusiveStartKey(lastKeysEvaluated);
-            ScanResult result = dbScanWithThroughputBackOff(scanRequest);
-            for (Map<String, AttributeValue> item : result.getItems()) {
-                propertyMap.put(item.get(keyAttributeName.get()).getS(), item.get(valueAttributeName.get()).getS());
+            ScanRequest scanRequest = ScanRequest.builder()
+                    .tableName(table)
+                    .exclusiveStartKey(lastKeysEvaluated)
+                    .build();
+            ScanResponse result = dbScanWithThroughputBackOff(scanRequest);
+            for (Map<String, AttributeValue> item : result.items()) {
+                propertyMap.put(item.get(keyAttributeName.get()).s(), item.get(valueAttributeName.get()).s());
             }
-            lastKeysEvaluated = result.getLastEvaluatedKey();
-        } while (lastKeysEvaluated != null);
+            lastKeysEvaluated = result.lastEvaluatedKey();
+        } while (!lastKeysEvaluated.isEmpty());
         return propertyMap;
     }
 
