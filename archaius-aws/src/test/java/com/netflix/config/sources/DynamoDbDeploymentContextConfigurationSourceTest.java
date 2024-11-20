@@ -15,22 +15,17 @@
  */
 package com.netflix.config.sources;
 
-import com.netflix.config.ConfigurationBasedDeploymentContext;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DeploymentContext;
-import com.netflix.config.PollResult;
-import com.netflix.config.PropertyWithDeploymentContext;
+import com.netflix.config.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * User: gorzell

@@ -15,19 +15,15 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputExceededException;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughputExceededException;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 import java.util.Map;
 
@@ -74,44 +70,13 @@ public abstract class AbstractDynamoDbConfigurationSource <T> {
     protected DynamicLongProperty maxRetryCount = DynamicPropertyFactory.getInstance()
             .getLongProperty(maxRetryCountPropertyName, defaultMaxRetryCount);
 
-    protected AmazonDynamoDB dbClient;
+    protected DynamoDbClient dbClient;
 
-    public AbstractDynamoDbConfigurationSource() {
-        this(new AmazonDynamoDBClient());
-        setEndpoint();
-    }
-
-    public AbstractDynamoDbConfigurationSource(ClientConfiguration clientConfiguration) {
-        this(new AmazonDynamoDBClient(clientConfiguration));
-        setEndpoint();
-    }
-
-    public AbstractDynamoDbConfigurationSource(AWSCredentials credentials) {
-        this(new AmazonDynamoDBClient(credentials));
-        setEndpoint();
-    }
-
-    public AbstractDynamoDbConfigurationSource(AWSCredentials credentials, ClientConfiguration clientConfiguration) {
-        this(new AmazonDynamoDBClient(credentials, clientConfiguration));
-        setEndpoint();
-    }
-
-    public AbstractDynamoDbConfigurationSource(AWSCredentialsProvider credentialsProvider) {
-        this(new AmazonDynamoDBClient(credentialsProvider));
-        setEndpoint();
-    }
-
-    public AbstractDynamoDbConfigurationSource(AWSCredentialsProvider credentialsProvider, ClientConfiguration clientConfiguration) {
-        this(new AmazonDynamoDBClient(credentialsProvider, clientConfiguration));
-        setEndpoint();
-    }
-
-    public AbstractDynamoDbConfigurationSource(AmazonDynamoDB dbClient) {
+    public AbstractDynamoDbConfigurationSource(DynamoDbClient dbClient) {
         this.dbClient = dbClient;
     }
 
-
-    protected ScanResult dbScanWithThroughputBackOff(ScanRequest scanRequest) {
+    protected ScanResponse dbScanWithThroughputBackOff(ScanRequest scanRequest) {
         Long currentBackOffMs = minBackOffMs.get();
         Long retryCount = 0L;
         while (true) {
@@ -142,11 +107,5 @@ public abstract class AbstractDynamoDbConfigurationSource <T> {
 
         loadPropertiesFromTable(table);
         log.info("Successfully polled Dynamo for a new configuration based on table:" + table);
-    }
-
-    private void setEndpoint() {
-        String endpoint = endpointName.get();
-        dbClient.setEndpoint(endpoint);
-        log.info("Set Dynamo endpoint:" + endpoint);
     }
 }

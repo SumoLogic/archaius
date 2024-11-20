@@ -15,11 +15,11 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.netflix.config.DeploymentContext;
 import com.netflix.config.PropertyWithDeploymentContext;
 import org.junit.Test;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
 import java.util.Collection;
 
@@ -55,7 +55,7 @@ public class DynamoDbDeploymentContextTableCacheTest {
 
     @Test
     public void testPoll() throws Exception {
-        AmazonDynamoDB mockContextDbClient = mock(AmazonDynamoDB.class);
+        DynamoDbClient mockContextDbClient = mock(DynamoDbClient.class);
 
         when(mockContextDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.contextScanResult1,
                 DynamoDbMocks.contextScanResult2);

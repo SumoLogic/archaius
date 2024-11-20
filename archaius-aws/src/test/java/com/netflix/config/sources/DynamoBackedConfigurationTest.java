@@ -15,10 +15,10 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.netflix.config.*;
 import org.junit.Test;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 public class DynamoBackedConfigurationTest {
     @Test
     public void testPropertyChange() throws Exception {
-        AmazonDynamoDB mockBasicDbClient = mock(AmazonDynamoDB.class);
+        DynamoDbClient mockBasicDbClient = mock(DynamoDbClient.class);
 
         //3 of the first config to cover: object creation, threadRun at 0 delay, load properties
         when(mockBasicDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.basicScanResult1,

@@ -15,13 +15,10 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.netflix.config.ConfigurationManager;
 import com.netflix.config.PollResult;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -36,7 +33,7 @@ public class DynamoDbConfigurationSourceTest {
 
     @Test
     public void testPoll() throws Exception {
-        AmazonDynamoDB mockBasicDbClient = mock(AmazonDynamoDB.class);
+        DynamoDbClient mockBasicDbClient = mock(DynamoDbClient.class);
         when(mockBasicDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.basicScanResult1);
 
         DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(mockBasicDbClient);
@@ -49,7 +46,7 @@ public class DynamoDbConfigurationSourceTest {
 
     @Test
     public void testUpdate() throws Exception {
-        AmazonDynamoDB mockBasicDbClient = mock(AmazonDynamoDB.class);
+        DynamoDbClient mockBasicDbClient = mock(DynamoDbClient.class);
         when(mockBasicDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.basicScanResult1, DynamoDbMocks.basicScanResult2);
 
         DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(mockBasicDbClient);

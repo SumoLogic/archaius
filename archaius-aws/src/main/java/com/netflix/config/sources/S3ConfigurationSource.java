@@ -1,14 +1,14 @@
 
 package com.netflix.config.sources;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.netflix.config.PollResult;
 import com.netflix.config.PolledConfigurationSource;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -24,50 +24,38 @@ import java.util.Properties;
  * {@link com.netflix.config.sources.URLConfigurationSource}.
  *
  * Poll requests throw exceptions in line with
- * {@link com.amazonaws.services.s3.AmazonS3#getObject(GetObjectRequest)} and
+ * {@link software.amazon.awssdk.services.s3.S3Client#getObject(GetObjectRequest)} and
  * {@link java.util.Properties#load(InputStream)} for the obvious reasons
  * (file not found, bad credentials, no network connection, malformed file...)
  *
  * @author Michael Tandy
  */
 public class S3ConfigurationSource implements PolledConfigurationSource {
-    private final AmazonS3 client;
+    private final S3Client client;
     private final String bucketName;
     private final String key;
 
     /**
-     * Create the instance with the specified credentials, bucket and key.
-     * Uses the default {@link com.amazonaws.services.s3.AmazonS3Client}.
-     * @param credentialsProvider
-     * @param bucketName The S3 bucket containing the configuration file.
-     * @param key The key of the file within that bucket.
-     */
-    public S3ConfigurationSource(AWSCredentialsProvider credentialsProvider, String bucketName, String key) {
-        this(new AmazonS3Client(credentialsProvider), bucketName, key);
-    }
-
-    /**
-     * Create the instance with the provided {@link com.amazonaws.services.s3.AmazonS3},
+     * Create the instance with the provided {@link software.amazon.awssdk.services.s3.S3Client},
      * bucket and key. Suitable for injecting a custom client for testing,
      * messing around with endpoints etc.
      * @param client to be used to retrieve the object.
      * @param bucketName The S3 bucket containing the configuration file.
      * @param key The key of the file within that bucket.
      */
-    public S3ConfigurationSource(AmazonS3 client, String bucketName, String key) {
+    public S3ConfigurationSource(S3Client client, String bucketName, String key) {
         this.client = client;
         this.bucketName = bucketName;
         this.key = key;
     }
 
     @Override
-    public PollResult poll(boolean initial, Object checkPoint) throws IOException, AmazonServiceException {
-        GetObjectRequest s3request = new GetObjectRequest(bucketName, key);
-        InputStream is = null;
+    public PollResult poll(boolean initial, Object checkPoint) throws IOException, AwsServiceException {
+        GetObjectRequest s3request = GetObjectRequest.builder()
+                .bucket(bucketName).key(key).build();
+        ResponseInputStream<GetObjectResponse> is = null;
         try {
-
-            S3Object result = client.getObject(s3request);
-            is = result.getObjectContent();
+            is = client.getObject(s3request);
             Map<String,Object> resultMap = inputStreamToMap(is);
             return PollResult.createFull(resultMap);
 

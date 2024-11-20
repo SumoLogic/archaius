@@ -15,17 +15,16 @@
  */
 package com.netflix.config.sources;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.netflix.config.*;
+import com.netflix.config.DeploymentContext;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
+import com.netflix.config.PropertyWithDeploymentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -70,134 +69,11 @@ public class DynamoDbDeploymentContextTableCache extends AbstractDynamoDbConfigu
     private ScheduledExecutorService executor;
     private volatile Map<String, PropertyWithDeploymentContext> cachedTable = new HashMap<String, PropertyWithDeploymentContext>();
 
-
-    public DynamoDbDeploymentContextTableCache() {
-        this(defaultInitialDelayMillis, defaultDelayMillis);
-    }
-
-    /**
-     * @param initialDelayMillis
-     * @param delayMillis
-     */
-    public DynamoDbDeploymentContextTableCache(int initialDelayMillis, int delayMillis) {
-        super();
-        this.initialDelayMillis = initialDelayMillis;
-        this.delayMillis = delayMillis;
-        start();
-    }
-
-    /**
-     * @param clientConfiguration
-     */
-    public DynamoDbDeploymentContextTableCache(ClientConfiguration clientConfiguration) {
-        this(clientConfiguration, defaultInitialDelayMillis, defaultDelayMillis);
-    }
-
-    /**
-     * @param clientConfiguration
-     * @param initialDelayMillis
-     * @param delayMillis
-     */
-    public DynamoDbDeploymentContextTableCache(ClientConfiguration clientConfiguration, int initialDelayMillis, int delayMillis) {
-        super(clientConfiguration);
-        this.initialDelayMillis = initialDelayMillis;
-        this.delayMillis = delayMillis;
-        start();
-    }
-
-    /**
-     * @param credentials
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentials credentials) {
-        this(credentials, defaultInitialDelayMillis, defaultDelayMillis);
-    }
-
-    /**
-     * @param credentials
-     * @param initialDelayMillis
-     * @param delayMillis
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentials credentials, int initialDelayMillis, int delayMillis) {
-        super(credentials);
-        this.initialDelayMillis = initialDelayMillis;
-        this.delayMillis = delayMillis;
-        start();
-    }
-
-    /**
-     * @param credentials
-     * @param clientConfiguration
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentials credentials, ClientConfiguration clientConfiguration) {
-        this(credentials, clientConfiguration, defaultInitialDelayMillis, defaultDelayMillis);
-    }
-
-    /**
-     * @param credentials
-     * @param clientConfiguration
-     * @param initialDelayMillis
-     * @param delayMillis
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentials credentials, ClientConfiguration clientConfiguration, int initialDelayMillis, int delayMillis) {
-        super(credentials, clientConfiguration);
-        this.initialDelayMillis = initialDelayMillis;
-        this.delayMillis = delayMillis;
-        start();
-    }
-
-    /**
-     * @param credentialsProvider
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentialsProvider credentialsProvider) {
-        this(credentialsProvider, defaultInitialDelayMillis, defaultDelayMillis);
-    }
-
-    /**
-     * @param credentialsProvider
-     * @param initialDelayMillis
-     * @param delayMillis
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentialsProvider credentialsProvider, int initialDelayMillis, int delayMillis) {
-        super(credentialsProvider);
-        this.initialDelayMillis = initialDelayMillis;
-        this.delayMillis = delayMillis;
-        start();
-    }
-
-    /**
-     * @param credentialsProvider
-     * @param clientConfiguration
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentialsProvider credentialsProvider, ClientConfiguration clientConfiguration) {
-        this(credentialsProvider, clientConfiguration, defaultInitialDelayMillis, defaultDelayMillis);
-    }
-
-    /**
-     * @param credentialsProvider
-     * @param clientConfiguration
-     * @param initialDelayMillis
-     * @param delayMillis
-     */
-    public DynamoDbDeploymentContextTableCache(AWSCredentialsProvider credentialsProvider, ClientConfiguration clientConfiguration, int initialDelayMillis, int delayMillis) {
-        super(credentialsProvider, clientConfiguration);
-        this.initialDelayMillis = initialDelayMillis;
-        this.delayMillis = delayMillis;
-        start();
-    }
-
-    /**
-     * @param dbClient
-     */
-    public DynamoDbDeploymentContextTableCache(AmazonDynamoDB dbClient) {
+    public DynamoDbDeploymentContextTableCache(DynamoDbClient dbClient) {
         this(dbClient, defaultInitialDelayMillis, defaultDelayMillis);
     }
 
-    /**
-     * @param dbClient
-     * @param initialDelayMillis
-     * @param delayMillis
-     */
-    public DynamoDbDeploymentContextTableCache(AmazonDynamoDB dbClient, int initialDelayMillis, int delayMillis) {
+    public DynamoDbDeploymentContextTableCache(DynamoDbClient dbClient, int initialDelayMillis, int delayMillis) {
         super(dbClient);
         this.initialDelayMillis = initialDelayMillis;
         this.delayMillis = delayMillis;
@@ -258,27 +134,28 @@ public class DynamoDbDeploymentContextTableCache extends AbstractDynamoDbConfigu
         Map<String, PropertyWithDeploymentContext> propertyMap = new HashMap<String, PropertyWithDeploymentContext>();
         Map<String, AttributeValue> lastKeysEvaluated = null;
         do {
-            ScanRequest scanRequest = new ScanRequest()
-                    .withTableName(table)
-                    .withExclusiveStartKey(lastKeysEvaluated);
-            ScanResult result = dbScanWithThroughputBackOff(scanRequest);
-            for (Map<String, AttributeValue> item : result.getItems()) {
-                String keyVal = item.get(keyAttributeName.get()).getS();
+            ScanRequest scanRequest = ScanRequest.builder()
+                    .tableName(table)
+                    .exclusiveStartKey(lastKeysEvaluated)
+                    .build();
+            ScanResponse result = dbScanWithThroughputBackOff(scanRequest);
+            for (Map<String, AttributeValue> item : result.items()) {
+                String keyVal = item.get(keyAttributeName.get()).s();
 
                 //Need to deal with the fact that these attributes might not exist
-                DeploymentContext.ContextKey contextKey = item.containsKey(contextKeyAttributeName.get()) ? DeploymentContext.ContextKey.valueOf(item.get(contextKeyAttributeName.get()).getS()) : null;
-                String contextVal = item.containsKey(contextValueAttributeName.get()) ? item.get(contextValueAttributeName.get()).getS() : null;
+                DeploymentContext.ContextKey contextKey = item.containsKey(contextKeyAttributeName.get()) ? DeploymentContext.ContextKey.valueOf(item.get(contextKeyAttributeName.get()).s()) : null;
+                String contextVal = item.containsKey(contextValueAttributeName.get()) ? item.get(contextValueAttributeName.get()).s() : null;
                 String key = keyVal + ";" + contextKey + ";" + contextVal;
                 propertyMap.put(key,
                         new PropertyWithDeploymentContext(
                                 contextKey,
                                 contextVal,
                                 keyVal,
-                                item.get(valueAttributeName.get()).getS()
+                                item.get(valueAttributeName.get()).s()
                         ));
             }
-            lastKeysEvaluated = result.getLastEvaluatedKey();
-        } while (lastKeysEvaluated != null);
+            lastKeysEvaluated = result.lastEvaluatedKey();
+        } while (!lastKeysEvaluated.isEmpty());
         return propertyMap;
     }
 
