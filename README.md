@@ -1,5 +1,14 @@
 Archaius
 =====
+
+- forked from upstream in 2019, use upstream - not this fork
+- since then an upstream archaius v2 has come to exist
+- we're shrinking the size of this fork and are ultimately looking to move to upstream v2:
+  - `archaius-scala` was removed (not available in v2, our usage in inlined as we'd customized this module)
+  - other modules have been removed
+  - this fork has been updated to v2 of relevant aws-sdk
+  - the only other planned change here is a move to commons-configuration2 
+
 [![NetflixOSS Lifecycle](https://img.shields.io/osslifecycle/Netflix/archaius.svg)]()
 
 [![Build Status](https://netflixoss.ci.cloudbees.com/buildStatus/icon?job=archaius-master)](https://netflixoss.ci.cloudbees.com/job/archaius-master/)

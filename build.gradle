@@ -101,37 +101,12 @@ project(':archaius-aws') {
     }
 }
 
-//project(':archaius-jclouds') {
-//    dependencies {
-//        compile project(':archaius-core')
-//        compile 'org.jclouds:jclouds-blobstore:1.6.0'
-//        testCompile 'junit:junit:4.11'
-//        testCompile 'org.slf4j:slf4j-simple:1.6.4'
-//    }
-//}
-
 project(':archaius-typesafe') {
     dependencies {
         compile project(':archaius-core')
         compile 'com.typesafe:config:1.2.1'
         testCompile 'junit:junit:4.11'
         testCompile 'org.slf4j:slf4j-simple:1.6.4'
-    }
-}
-
-project(':archaius-zookeeper') {
-    dependencies {
-        compile project(':archaius-core')
-        compile('org.apache.zookeeper:zookeeper:3.4.5') {
-            exclude group: 'com.sun.jdmk', module: 'jmxtools'
-            exclude group: 'com.sun.jmx', module: 'jmxri'
-            exclude group: 'javax.jms', module: 'jms'
-        }
-        compile 'org.apache.curator:curator-client:2.3.0'
-        compile 'org.apache.curator:curator-recipes:2.3.0'
-        testCompile 'junit:junit:4.11'
-        testCompile 'org.slf4j:slf4j-simple:1.6.4'
-        testCompile 'org.apache.curator:curator-test:2.3.0'
     }
 }
 
@@ -146,85 +121,5 @@ project(':archaius-etcd') {
         testCompile 'junit:junit:4.11'
         testCompile 'org.mockito:mockito-all:1.9.5'
         testCompile 'org.slf4j:slf4j-simple:1.6.4'
-    }
-}
-
-project(':archaius-scala') {
-    apply plugin: 'scala'
-
-    dependencies {
-        compile project(':archaius-core')
-        compile 'org.scala-lang:scala-library:2.10.4'
-        testCompile 'org.scalatest:scalatest_2.10:3.0.8'
-        testCompile 'junit:junit:4.11'
-    }
-}
-
-project(':archaius-scala_2.11') {
-    apply plugin: 'scala'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    buildDir = 'build_2.11'
-
-    dependencies {
-        compile project(':archaius-core')
-        compile 'org.scala-lang:scala-library:2.11.11'
-        testCompile 'org.scalatest:scalatest_2.11:3.0.8'
-        testCompile 'junit:junit:4.11'
-    }
-}
-
-project(':archaius-scala_2.12') {
-    apply plugin: 'scala'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    buildDir = 'build_2.12'
-
-    dependencies {
-        compile project(':archaius-core')
-        compile 'org.scala-lang:scala-library:2.12.11'
-        testCompile 'org.scalatest:scalatest_2.12:3.0.8'
-        testCompile 'junit:junit:4.11'
-    }
-}
-
-project(':archaius-scala_2.13') {
-    apply plugin: 'scala'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    buildDir = 'build_2.13'
-
-    dependencies {
-        compile project(':archaius-core')
-        compile 'org.scala-lang:scala-library:2.13.3'
-        testCompile 'org.scalatest:scalatest_2.13:3.0.8'
-        testCompile 'junit:junit:4.11'
-    }
-}
-
-
-project(':archaius-samplelibrary') {
-    apply plugin: 'scala'
-
-    dependencies {
-        compile project(':archaius-scala')
-
-        compile 'org.slf4j:slf4j-api:1.6.4'
-        compile 'org.scala-lang:scala-library:2.10.1'
-
-        testCompile 'org.scalatest:scalatest_2.10.0:1.8'
-        testCompile 'junit:junit:4.11'
-    }
-    jar {
-        from('src/main/java') {
-            include 'META-INF/conf/springbeans.xml'
-            include 'META-INF/conf/config.properties'
-        }
     }
 }
