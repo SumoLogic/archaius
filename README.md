@@ -6,8 +6,11 @@ Archaius
 - we're shrinking the size of this fork and are ultimately looking to move to upstream v2:
   - `archaius-scala` was removed (not available in v2, our usage is inlined as we've customized this module)
   - other modules have been removed
-  - this fork has been updated to v2 of relevant aws-sdk
-  - the only other planned change here is a move to commons-configuration2
+    - the only other planned change here is a move to commons-configuration2
+- changes in this fork include:
+  - minor efficiency changes
+  - migrated to v2 of relevant aws-sdk
+  - updated to Java 17
  
 --------
 
