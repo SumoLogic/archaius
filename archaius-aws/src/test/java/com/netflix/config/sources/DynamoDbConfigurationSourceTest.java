@@ -24,43 +24,40 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
- * User: gorzell
- * Date: 1/17/13
- * Time: 10:18 AM
- * You should write something useful here.
+ * User: gorzell Date: 1/17/13 Time: 10:18 AM You should write something useful here.
  */
 public class DynamoDbConfigurationSourceTest {
 
-    @Test
-    public void testPoll() throws Exception {
-        DynamoDbClient mockBasicDbClient = mock(DynamoDbClient.class);
-        when(mockBasicDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.basicScanResult1);
+  @Test
+  public void testPoll() throws Exception {
+    DynamoDbClient mockBasicDbClient = mock(DynamoDbClient.class);
+    when(mockBasicDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.basicScanResult1);
 
-        DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(mockBasicDbClient);
-        PollResult result = testConfigSource.poll(false, null);
-        assertEquals(3, result.getComplete().size());
-        assertEquals("bar", result.getComplete().get("foo"));
-        assertEquals("goo", result.getComplete().get("goo"));
-        assertEquals("who", result.getComplete().get("boo"));
-    }
+    DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(mockBasicDbClient);
+    PollResult result = testConfigSource.poll(false, null);
+    assertEquals(3, result.getComplete().size());
+    assertEquals("bar", result.getComplete().get("foo"));
+    assertEquals("goo", result.getComplete().get("goo"));
+    assertEquals("who", result.getComplete().get("boo"));
+  }
 
-    @Test
-    public void testUpdate() throws Exception {
-        DynamoDbClient mockBasicDbClient = mock(DynamoDbClient.class);
-        when(mockBasicDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.basicScanResult1, DynamoDbMocks.basicScanResult2);
+  @Test
+  public void testUpdate() throws Exception {
+    DynamoDbClient mockBasicDbClient = mock(DynamoDbClient.class);
+    when(mockBasicDbClient.scan(any(ScanRequest.class))).thenReturn(DynamoDbMocks.basicScanResult1, DynamoDbMocks.basicScanResult2);
 
-        DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(mockBasicDbClient);
+    DynamoDbConfigurationSource testConfigSource = new DynamoDbConfigurationSource(mockBasicDbClient);
 
-        PollResult result = testConfigSource.poll(false, null);
-        assertEquals(3, result.getComplete().size());
-        assertEquals("bar", result.getComplete().get("foo"));
-        assertEquals("goo", result.getComplete().get("goo"));
-        assertEquals("who", result.getComplete().get("boo"));
+    PollResult result = testConfigSource.poll(false, null);
+    assertEquals(3, result.getComplete().size());
+    assertEquals("bar", result.getComplete().get("foo"));
+    assertEquals("goo", result.getComplete().get("goo"));
+    assertEquals("who", result.getComplete().get("boo"));
 
-        result = testConfigSource.poll(false, null);
-        assertEquals(3, result.getComplete().size());
-        assertEquals("bar", result.getComplete().get("foo"));
-        assertEquals("foo", result.getComplete().get("goo"));
-        assertEquals("who", result.getComplete().get("boo"));
-    }
+    result = testConfigSource.poll(false, null);
+    assertEquals(3, result.getComplete().size());
+    assertEquals("bar", result.getComplete().get("foo"));
+    assertEquals("foo", result.getComplete().get("goo"));
+    assertEquals("who", result.getComplete().get("boo"));
+  }
 }

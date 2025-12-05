@@ -31,61 +31,59 @@ import org.junit.Test;
 
 public class DynamicURLConfigurationTestWithFileURL {
 
-    @BeforeClass
-    public static void init() {
-        System.setProperty("archaius.configurationSource.defaultFileName", "test.properties");
+  @BeforeClass
+  public static void init() {
+    System.setProperty("archaius.configurationSource.defaultFileName", "test.properties");
+  }
+
+  @Test
+  public void testFileURL() {
+    DynamicURLConfiguration config = new DynamicURLConfiguration();
+    Assert.assertEquals(5, config.getInt("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
+  }
+
+  @Test
+  public void testFileURLWithPropertiesUpdatedDynamically() throws IOException, InterruptedException {
+
+    File file = File.createTempFile("DynamicURLConfigurationTestWithFileURL", "testFileURLWithPropertiesUpdatedDynamically");
+    populateFile(file, "test.host=12312,123213", "test.host1=13212");
+
+    AbstractConfiguration.setDefaultListDelimiter(',');
+    DynamicURLConfiguration config = new DynamicURLConfiguration(0, 500, false, file.toURI().toString());
+    Thread.sleep(1000);
+    Assert.assertEquals(13212, config.getInt("test.host1"));
+    Thread.sleep(1000);
+    populateFile(file, "test.host=12312,123213", "test.host1=13212");
+    populateFile(file, "test.host=12312,123213", "test.host1=13212");
+    CopyOnWriteArrayList writeList = new CopyOnWriteArrayList();
+    writeList.add("12312");
+    writeList.add("123213");
+    config.setProperty("sample.domain", "google,yahoo");
+    Assert.assertEquals(writeList, config.getProperty("test.host"));
+
+  }
+
+  @Test
+  public void testChineseCharacters() {
+    DynamicURLConfiguration config = new DynamicURLConfiguration();
+    Assert.assertEquals("\u4E2D\u6587\u6D4B\u8BD5", config.getString("com.netflix.test-subject"));
+  }
+
+  private void populateFile(File temporary, String prop1, String prop2) throws IOException {
+
+    String s = prop1 + "\n" + prop2 + "\n";
+    byte data[] = s.getBytes("UTF-8");
+    OutputStream out = null;
+    try {
+      out = new BufferedOutputStream(new FileOutputStream(temporary, true), 8 * 1024);
+      out.write(data, 0, data.length);
+    } finally {
+      if (null != out) {
+        out.flush();
+        out.close();
+      }
     }
-    
-    @Test
-    public void testFileURL() {
-        DynamicURLConfiguration config = new DynamicURLConfiguration();
-        Assert.assertEquals(5, config.getInt("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
-    }
 
-    
-    @Test
-    public void testFileURLWithPropertiesUpdatedDynamically() throws IOException, InterruptedException {
-
-        File file = File.createTempFile("DynamicURLConfigurationTestWithFileURL", "testFileURLWithPropertiesUpdatedDynamically");
-        populateFile(file, "test.host=12312,123213", "test.host1=13212");
-
-        AbstractConfiguration.setDefaultListDelimiter(',');
-        DynamicURLConfiguration config = new DynamicURLConfiguration(0, 500, false, file.toURI().toString());
-        Thread.sleep(1000);
-        Assert.assertEquals(13212, config.getInt("test.host1"));
-        Thread.sleep(1000);
-        populateFile(file, "test.host=12312,123213", "test.host1=13212");
-        populateFile(file, "test.host=12312,123213", "test.host1=13212");
-        CopyOnWriteArrayList writeList = new CopyOnWriteArrayList();
-        writeList.add("12312");
-        writeList.add("123213");
-        config.setProperty("sample.domain", "google,yahoo");
-        Assert.assertEquals(writeList, config.getProperty("test.host"));
-        
-
-    }
-    
-    @Test
-    public void testChineseCharacters(){
-        DynamicURLConfiguration config = new DynamicURLConfiguration();
-        Assert.assertEquals("\u4E2D\u6587\u6D4B\u8BD5", config.getString("com.netflix.test-subject"));
-    }
-
-    private void populateFile(File temporary, String prop1, String prop2) throws IOException {
-
-        String s = prop1 + "\n" + prop2 + "\n";
-        byte data[] = s.getBytes("UTF-8");
-        OutputStream out = null;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(temporary, true), 8 * 1024);
-            out.write(data, 0, data.length);
-        } finally {
-            if (null != out) {
-                out.flush();
-                out.close();
-            }
-        }
-
-    }
+  }
 
 }

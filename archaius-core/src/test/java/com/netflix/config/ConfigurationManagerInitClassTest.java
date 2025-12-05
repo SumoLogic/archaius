@@ -22,29 +22,28 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ConfigurationManagerInitClassTest {
-    
-    @BeforeClass
-    public static void init() {
-        System.setProperty("archaius.default.configuration.class", "com.netflix.config.TestConfiguration");        
+
+  @BeforeClass
+  public static void init() {
+    System.setProperty("archaius.default.configuration.class", "com.netflix.config.TestConfiguration");
+  }
+
+  @Test
+  public void testConfigurationClass() {
+    TestConfiguration config = (TestConfiguration) ConfigurationManager.getConfigInstance();
+    assertTrue(ConfigurationManager.isConfigurationInstalled());
+    Object configSource = DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
+    assertTrue(configSource == config);
+    try {
+      ConfigurationManager.install(new BaseConfiguration());
+      fail("IllegalStateException expected");
+    } catch (IllegalStateException e) {
+      assertNotNull(e);
     }
 
-    @Test
-    public void testConfigurationClass() {
-        TestConfiguration config = (TestConfiguration) ConfigurationManager.getConfigInstance();
-        assertTrue(ConfigurationManager.isConfigurationInstalled());
-        Object configSource = DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
-        assertTrue(configSource == config);
-        try {
-            ConfigurationManager.install(new BaseConfiguration());
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertNotNull(e);
-        }        
-        
-        
-    }
+  }
 }
 
 class TestConfiguration extends BaseConfiguration {
-    
+
 }

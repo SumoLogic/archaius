@@ -25,75 +25,75 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class SimpleDeploymentContext implements DeploymentContext {
-    private Map<DeploymentContext.ContextKey, String> map = new ConcurrentHashMap<DeploymentContext.ContextKey, String>();
-    
-    @Override
-    public String getDeploymentEnvironment() {
-        return map.get(ContextKey.environment);
-    }
+  private Map<DeploymentContext.ContextKey, String> map = new ConcurrentHashMap<DeploymentContext.ContextKey, String>();
 
-    @Override
-    public void setDeploymentEnvironment(String env) {
-        map.put(ContextKey.environment, env);       
-    }
+  @Override
+  public String getDeploymentEnvironment() {
+    return map.get(ContextKey.environment);
+  }
 
-    @Override
-    public String getDeploymentDatacenter() {
-        return map.get(ContextKey.datacenter);
-    }
+  @Override
+  public void setDeploymentEnvironment(String env) {
+    map.put(ContextKey.environment, env);
+  }
 
-    @Override
-    public void setDeploymentDatacenter(String deployedAt) {
-        map.put(ContextKey.datacenter, deployedAt);
-    }
+  @Override
+  public String getDeploymentDatacenter() {
+    return map.get(ContextKey.datacenter);
+  }
 
-    @Override
-    public String getApplicationId() {
-        return map.get(ContextKey.appId);
-    }
+  @Override
+  public void setDeploymentDatacenter(String deployedAt) {
+    map.put(ContextKey.datacenter, deployedAt);
+  }
 
-    @Override
-    public void setApplicationId(String appId) {
-        map.put(ContextKey.appId, appId);
-    }
+  @Override
+  public String getApplicationId() {
+    return map.get(ContextKey.appId);
+  }
 
-    @Override
-    public void setDeploymentServerId(String serverId) {
-        map.put(ContextKey.serverId, serverId);
-    }
+  @Override
+  public void setApplicationId(String appId) {
+    map.put(ContextKey.appId, appId);
+  }
 
-    @Override
-    public String getDeploymentServerId() {
-        return map.get(ContextKey.serverId);
-    }
+  @Override
+  public void setDeploymentServerId(String serverId) {
+    map.put(ContextKey.serverId, serverId);
+  }
 
-    @Override
-    public String getDeploymentStack() {
-        return map.get(ContextKey.stack);
-    }
+  @Override
+  public String getDeploymentServerId() {
+    return map.get(ContextKey.serverId);
+  }
 
-    @Override
-    public void setDeploymentStack(String stack) {
-        map.put(ContextKey.stack, stack);
-    }
+  @Override
+  public String getDeploymentStack() {
+    return map.get(ContextKey.stack);
+  }
 
-    @Override
-    public String getDeploymentRegion() {
-        return map.get(ContextKey.region);
-    }    
+  @Override
+  public void setDeploymentStack(String stack) {
+    map.put(ContextKey.stack, stack);
+  }
 
-    @Override
-    public void setDeploymentRegion(String region) {
-        map.put(ContextKey.region, region);
-    }
+  @Override
+  public String getDeploymentRegion() {
+    return map.get(ContextKey.region);
+  }
 
-    @Override
-    public String getValue(ContextKey key) {
-        return map.get(key);
-    }
+  @Override
+  public void setDeploymentRegion(String region) {
+    map.put(ContextKey.region, region);
+  }
 
-    @Override
-    public void setValue(ContextKey key, String value) {
-        map.put(key, value);
-    }    
+  @Override
+  public String getValue(ContextKey key) {
+    return map.get(key);
+  }
+
+  @Override
+  public void setValue(ContextKey key, String value) {
+    map.put(key, value);
+  }
 }

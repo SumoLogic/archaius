@@ -19,25 +19,26 @@ import com.netflix.config.PropertyWrapper;
 
 /**
  * A dynamic property whose value is an integer
- * <p>Use APIs in {@link DynamicPropertyFactory} to create instance of this class.
+ * <p>
+ * Use APIs in {@link DynamicPropertyFactory} to create instance of this class.
  * 
  * @author awang
  *
  */
 public class DynamicIntProperty extends PropertyWrapper<Integer> {
-    public DynamicIntProperty(String propName, int defaultValue) {
-        super(propName, Integer.valueOf(defaultValue));
-    }
-        
-    /**
-     * Get the current value from the underlying DynamicProperty
-     */
-    public int get() {
-        return prop.getInteger(defaultValue).intValue();
-    }
+  public DynamicIntProperty(String propName, int defaultValue) {
+    super(propName, Integer.valueOf(defaultValue));
+  }
 
-    @Override
-    public Integer getValue() {
-        return get();
-    }
+  /**
+   * Get the current value from the underlying DynamicProperty
+   */
+  public int get() {
+    return prop.getInteger(defaultValue).intValue();
+  }
+
+  @Override
+  public Integer getValue() {
+    return get();
+  }
 }

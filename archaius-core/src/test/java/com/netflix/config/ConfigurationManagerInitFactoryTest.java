@@ -23,31 +23,31 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ConfigurationManagerInitFactoryTest {
-    
-    @BeforeClass
-    public static void init() {
-        System.setProperty("archaius.default.configuration.factory", "com.netflix.config.TestConfigurationFactory");        
-    }
 
-    @Test
-    public void testConfigurationFactory() {
-        Object configSource = DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
-        AbstractConfiguration config = ConfigurationManager.getConfigInstance();
-        assertTrue(ConfigurationManager.isConfigurationInstalled());
-        assertTrue(configSource == config);
-        assertTrue(config == TestConfigurationFactory.getInstance());
-        try {
-            DynamicPropertyFactory.initWithConfigurationSource(new BaseConfiguration());
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertNotNull(e);
-        }        
+  @BeforeClass
+  public static void init() {
+    System.setProperty("archaius.default.configuration.factory", "com.netflix.config.TestConfigurationFactory");
+  }
+
+  @Test
+  public void testConfigurationFactory() {
+    Object configSource = DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
+    AbstractConfiguration config = ConfigurationManager.getConfigInstance();
+    assertTrue(ConfigurationManager.isConfigurationInstalled());
+    assertTrue(configSource == config);
+    assertTrue(config == TestConfigurationFactory.getInstance());
+    try {
+      DynamicPropertyFactory.initWithConfigurationSource(new BaseConfiguration());
+      fail("IllegalStateException expected");
+    } catch (IllegalStateException e) {
+      assertNotNull(e);
     }
+  }
 }
 
 class TestConfigurationFactory {
-    private static AbstractConfiguration configInstance = new BaseConfiguration();
-    public static AbstractConfiguration getInstance() {
-        return configInstance;
-    }
+  private static AbstractConfiguration configInstance = new BaseConfiguration();
+  public static AbstractConfiguration getInstance() {
+    return configInstance;
+  }
 }

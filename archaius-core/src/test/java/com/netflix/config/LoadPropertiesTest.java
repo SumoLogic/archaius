@@ -22,14 +22,14 @@ import java.util.Properties;
 import org.junit.Test;
 
 public class LoadPropertiesTest {
-    
-    @Test
-    public void testLoadProperties() {
-        Properties props = new Properties();
-        props.setProperty("xyz", "abc");
-        // make sure ConfigurationManager can initialize itself and load the properties
-        ConfigurationManager.loadProperties(props);
-        assertEquals("abc", ConfigurationManager.getConfigInstance().getProperty("xyz"));
-    }
+
+  @Test
+  public void testLoadProperties() {
+    Properties props = new Properties();
+    props.setProperty("xyz", "abc");
+    // make sure ConfigurationManager can initialize itself and load the properties
+    ConfigurationManager.loadProperties(props);
+    assertEquals("abc", ConfigurationManager.getConfigInstance().getProperty("xyz"));
+  }
 
 }

@@ -22,18 +22,18 @@ import org.junit.Test;
 
 public class MissingConfigExceptionTest {
 
-    @BeforeClass
-    public static void init() {
-        System.setProperty(DynamicPropertyFactory.THROW_MISSING_CONFIGURATION_SOURCE_EXCEPTION, "true");
+  @BeforeClass
+  public static void init() {
+    System.setProperty(DynamicPropertyFactory.THROW_MISSING_CONFIGURATION_SOURCE_EXCEPTION, "true");
+  }
+
+  @Test
+  public void testThrowMissingConfigurationSourceException() {
+    try {
+      DynamicPropertyFactory.getInstance();
+    } catch (Throwable e) {
+      e.printStackTrace();
+      fail("unexpected exception: " + e.getMessage());
     }
-    
-    @Test
-    public void testThrowMissingConfigurationSourceException() {
-        try {
-            DynamicPropertyFactory.getInstance();            
-        } catch (Throwable e) {
-            e.printStackTrace();
-            fail("unexpected exception: " + e.getMessage());
-        }
-    }
+  }
 }

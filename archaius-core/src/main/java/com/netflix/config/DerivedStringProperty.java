@@ -29,92 +29,93 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class DerivedStringProperty<D> implements Property<D> {
 
-    private static final Logger log = LoggerFactory.getLogger(DerivedStringProperty.class);
+  private static final Logger log = LoggerFactory.getLogger(DerivedStringProperty.class);
 
-    private final DynamicStringProperty delegate;
+  private final DynamicStringProperty delegate;
 
-    private final List<Runnable> callbackList = Lists.newArrayList();
+  private final List<Runnable> callbackList = Lists.newArrayList();
 
-    /**
-     * Holds derived value, which may be null.
-     */
-    private final AtomicReference<D> derived = new AtomicReference<D>(null);
+  /**
+   * Holds derived value, which may be null.
+   */
+  private final AtomicReference<D> derived = new AtomicReference<D>(null);
 
-    public DerivedStringProperty(String name, String defaultValue) {
-        delegate = DynamicPropertyFactory.getInstance().getStringProperty(name, defaultValue);
-        deriveAndSet();
-        Runnable callback = new Runnable() {
-            public void run() {
-                propertyChangedInternal();
-            }
-        };
-        delegate.addCallback(callback);
-        callbackList.add(callback);
+  public DerivedStringProperty(String name, String defaultValue) {
+    delegate = DynamicPropertyFactory.getInstance().getStringProperty(name, defaultValue);
+    deriveAndSet();
+    Runnable callback = new Runnable() {
+      public void run() {
+        propertyChangedInternal();
+      }
+    };
+    delegate.addCallback(callback);
+    callbackList.add(callback);
+  }
+
+  /**
+   * Fetches derived value.
+   */
+  public D get() {
+    return derived.get();
+  }
+
+  @Override
+  public D getValue() {
+    return get();
+  }
+
+  @Override
+  public D getDefaultValue() {
+    return derive(delegate.getDefaultValue());
+  }
+
+  @Override
+  public String getName() {
+    return delegate.getName();
+  }
+
+  @Override
+  public long getChangedTimestamp() {
+    return delegate.getChangedTimestamp();
+  }
+
+  @Override
+  public void addCallback(Runnable callback) {
+    delegate.addCallback(callback);
+    callbackList.add(callback);
+  }
+
+  /**
+   * Remove all callbacks registered through this instance of property
+   */
+  @Override
+  public void removeAllCallbacks() {
+    for (Runnable callback : callbackList) {
+      delegate.prop.removeCallback(callback);
     }
+  }
 
-    /**
-     * Fetches derived value.
-     */
-    public D get() {
-        return derived.get();
+  /**
+   * Invoked when property is updated with a new value. Should return the new derived value, which may be null.
+   */
+  protected abstract D derive(String value);
+
+  /**
+   * {@link com.netflix.config.PropertyWrapper#propertyChanged()}
+   */
+  protected void propertyChanged() {
+  }
+
+  void propertyChangedInternal() {
+    deriveAndSet();
+    propertyChanged();
+  }
+
+  private void deriveAndSet() {
+    try {
+      derived.set(derive(this.delegate.get()));
+    } catch (Exception e) {
+      log.error("error when deriving initial value", e);
     }
-    
-    @Override
-    public D getValue() {
-        return get();
-    }
-
-    @Override
-    public D getDefaultValue() {
-        return derive(delegate.getDefaultValue());
-    }
-
-    @Override
-    public String getName() {
-        return delegate.getName();
-    }
-
-    @Override
-    public long getChangedTimestamp() {
-        return delegate.getChangedTimestamp();
-    }
-
-    @Override
-    public void addCallback(Runnable callback) {
-        delegate.addCallback(callback);
-        callbackList.add(callback);
-    }
-
-    /**
-     * Remove all callbacks registered through this instance of property
-     */
-    @Override
-    public void removeAllCallbacks() {
-        for (Runnable callback: callbackList) {
-            delegate.prop.removeCallback(callback);
-        }
-    }
-
-    /**
-     * Invoked when property is updated with a new value.  Should return the new derived value, which may be null.
-     */
-    protected abstract D derive(String value);
-
-    /**
-     * {@link com.netflix.config.PropertyWrapper#propertyChanged()}
-     */
-    protected void propertyChanged() {}
-
-    void propertyChangedInternal() {
-        deriveAndSet();
-        propertyChanged();
-    }
-
-    private void deriveAndSet() {
-         try {
-            derived.set(derive(this.delegate.get()));
-        } catch (Exception e) {
-            log.error("error when deriving initial value", e);
-        }
-    }
+  }
 }

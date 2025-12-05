@@ -33,173 +33,154 @@ import com.netflix.config.sources.URLConfigurationSource;
 /**
  * This class helps in loading properties present in a typical web appplication.
  * 
- * 1. In a series of application properties file (typically under
- * WEB-INF/conf/*) 
+ * 1. In a series of application properties file (typically under WEB-INF/conf/*)
  * 
- * 2. Every library (JAR) located in the web application's
- * classpath i.e. WEB-INF/lib/*.jar, can contain properties in say
- * META-INF/conf/config.properties
+ * 2. Every library (JAR) located in the web application's classpath i.e. WEB-INF/lib/*.jar, can contain properties in say META-INF/conf/config.properties
  * 
  * This class helps load all the properties into the Default Configuration.
  * 
- * In case you would like to load these properties into another Configuration
- * instead, you can use {@link #getProperties()} to obtain the properties and
- * load these into the <code>Configuration</code> of your choice.
+ * In case you would like to load these properties into another Configuration instead, you can use {@link #getProperties()} to obtain the properties and load
+ * these into the <code>Configuration</code> of your choice.
  * 
  * @author stonse
  * 
  */
 public class WebApplicationProperties {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(WebApplicationProperties.class);
+  private static final Logger logger = LoggerFactory.getLogger(WebApplicationProperties.class);
 
-	static File appConfFolder = new File("."); // folder where the
-												// application properties
-												// files are
-	static String baseConfigFileName = "config";
-	
-	static boolean loadLibraryProperties = true;
-	
-	static String libraryPropertiesResourceRelativePath = ClasspathPropertiesConfiguration.propertiesResourceRelativePath;
+  static File appConfFolder = new File("."); // folder where the
+  // application properties
+  // files are
+  static String baseConfigFileName = "config";
 
-	/**
-	 * Initialize. The application should call this method once the Application
-	 * Folder is set using {@link #setAppConfFolder(File, String)} method.
-	 * 
-	 * @param appConfFolderFromConfig
-	 * @param baseConfigFileName
-	 * @param loadLibraryProperties
-	 * @param propertiesResourceRelativePath
-	 */
-	public static void initialize(File appConfFolderFromConfig,
-			String baseConfigFileName, boolean loadLibraryProperties,
-			String propertiesResourceRelativePath) {
-		WebApplicationProperties.appConfFolder = appConfFolderFromConfig;
-		WebApplicationProperties.baseConfigFileName = baseConfigFileName;
-		WebApplicationProperties.loadLibraryProperties = loadLibraryProperties;
-		WebApplicationProperties.libraryPropertiesResourceRelativePath = propertiesResourceRelativePath;
-		initialize();
-	}
-	
-	/**
-	 * Initialize.
-	 * The application should call this method once the Application Folder is set using {@link #setAppConfFolder(File, String)} method.
-	 */
-	public static void initialize() {
-		try {
-			initApplicationProperties();
-		} catch (Exception e) {
-			logger.error("Unable to load Application Properties", e);
-			System.err.println("Unable to load Application Properties");
-			e.printStackTrace();
-		}
+  static boolean loadLibraryProperties = true;
 
-		// should we load the properties in the JAR files?
-		if (loadLibraryProperties){
-			try {
-				initClasspathPropertiesConfiguration();
-			} catch (Exception e) {
-				logger.error("Unable to load Library Properties", e);
-				System.err.println("Unable to load Library Properties");
-				e.printStackTrace();
-			}
-		}
+  static String libraryPropertiesResourceRelativePath = ClasspathPropertiesConfiguration.propertiesResourceRelativePath;
 
-		logger.debug("Properties loaded:" + getProperties());
-	}
+  /**
+   * Initialize. The application should call this method once the Application Folder is set using {@link #setAppConfFolder(File, String)} method.
+   * 
+   * @param appConfFolderFromConfig
+   * @param baseConfigFileName
+   * @param loadLibraryProperties
+   * @param propertiesResourceRelativePath
+   */
+  public static void initialize(File appConfFolderFromConfig, String baseConfigFileName, boolean loadLibraryProperties, String propertiesResourceRelativePath) {
+    WebApplicationProperties.appConfFolder = appConfFolderFromConfig;
+    WebApplicationProperties.baseConfigFileName = baseConfigFileName;
+    WebApplicationProperties.loadLibraryProperties = loadLibraryProperties;
+    WebApplicationProperties.libraryPropertiesResourceRelativePath = propertiesResourceRelativePath;
+    initialize();
+  }
 
-	protected static void initClasspathPropertiesConfiguration() {
-		ClasspathPropertiesConfiguration.initialize();
-	}
+  /**
+   * Initialize. The application should call this method once the Application Folder is set using {@link #setAppConfFolder(File, String)} method.
+   */
+  public static void initialize() {
+    try {
+      initApplicationProperties();
+    } catch (Exception e) {
+      logger.error("Unable to load Application Properties", e);
+      System.err.println("Unable to load Application Properties");
+      e.printStackTrace();
+    }
 
-	protected static void initApplicationProperties()
-			throws ConfigurationException, MalformedURLException {
-		File appPropFile = new File(appConfFolder + "/" + baseConfigFileName + ".properties");
-		File appEnvPropOverrideFile = new File(appConfFolder + "/" + baseConfigFileName +
-		 getEnvironment() + ".properties");
-		
-		 
-		// TODO awang, how do we add this to archaius default config?
-		PropertiesConfiguration appConf = new PropertiesConfiguration(
-				appPropFile);
-		// apply env overrides
-		PropertiesConfiguration overrideConf = new PropertiesConfiguration(appEnvPropOverrideFile);
-		Properties overrideprops = ConfigurationUtils.getProperties(overrideConf);
-		for (Object prop: overrideprops.keySet()){
-			appConf.setProperty(""+prop, overrideprops.getProperty(""+prop));
-		}
-		String path = appPropFile.toURI().toURL().toString();
-		System.setProperty(URLConfigurationSource.CONFIG_URL, path);
-		ConfigurationManager.loadPropertiesFromConfiguration(appConf);
+    // should we load the properties in the JAR files?
+    if (loadLibraryProperties) {
+      try {
+        initClasspathPropertiesConfiguration();
+      } catch (Exception e) {
+        logger.error("Unable to load Library Properties", e);
+        System.err.println("Unable to load Library Properties");
+        e.printStackTrace();
+      }
+    }
 
-	}
+    logger.debug("Properties loaded:" + getProperties());
+  }
 
-	private static String getEnvironment() {
-		String env = System.getProperty("env");
-		return env;
-	}
+  protected static void initClasspathPropertiesConfiguration() {
+    ClasspathPropertiesConfiguration.initialize();
+  }
 
-	public static File getAppConfFolder() {
-		return appConfFolder;
-	}
+  protected static void initApplicationProperties() throws ConfigurationException, MalformedURLException {
+    File appPropFile = new File(appConfFolder + "/" + baseConfigFileName + ".properties");
+    File appEnvPropOverrideFile = new File(appConfFolder + "/" + baseConfigFileName + getEnvironment() + ".properties");
 
-	/**
-	 * The folder where the application's properties files are located.
-	 * 
-	 * @param appConfFolderFromConfig
-	 *            the folder as a <code>File</code> object where the
-	 *            application's properties files are located
-	 * @param baseConfigFileName
-	 *            the "base" name of the properties file. For e.g. if you have
-	 *            config.properties, config-test.properties, then the value to
-	 *            pass in is "config"
-	 */
-	public static void setAppConfFolder(File appConfFolderFromConfig, String baseConfigFileName) {
-		WebApplicationProperties.appConfFolder = appConfFolderFromConfig;
-		WebApplicationProperties.baseConfigFileName = baseConfigFileName;
-	}
-	
-	
-	/**
-	 * Should we load the Library Properties
-	 */
-	public static boolean shouldLoadLibraryProperties() {
-		return loadLibraryProperties;
-	}
+    // TODO awang, how do we add this to archaius default config?
+    PropertiesConfiguration appConf = new PropertiesConfiguration(appPropFile);
+    // apply env overrides
+    PropertiesConfiguration overrideConf = new PropertiesConfiguration(appEnvPropOverrideFile);
+    Properties overrideprops = ConfigurationUtils.getProperties(overrideConf);
+    for (Object prop : overrideprops.keySet()) {
+      appConf.setProperty("" + prop, overrideprops.getProperty("" + prop));
+    }
+    String path = appPropFile.toURI().toURL().toString();
+    System.setProperty(URLConfigurationSource.CONFIG_URL, path);
+    ConfigurationManager.loadPropertiesFromConfiguration(appConf);
 
-	/**
-	 * Set this if you would like the {@link ClasspathPropertiesConfiguration}
-	 * to scan the JAR files in the classpath and load those proerties into the
-	 * default Configuration
-	 * 
-	 * @param loadLibraryProperties
-	 */
-	public static void setLoadLibraryProperties(boolean loadLibraryProperties) {
-		WebApplicationProperties.loadLibraryProperties = loadLibraryProperties;
-	}
+  }
 
-	/**
-	 * Returns the relative Resource Path of the properties files in the JAR files
-	 */
-	public static String getLibraryPropertiesResourceRelativePath() {
-		return libraryPropertiesResourceRelativePath;
-	}
+  private static String getEnvironment() {
+    String env = System.getProperty("env");
+    return env;
+  }
 
-	/**
-	 * Please see {@link ClasspathPropertiesConfiguration} on Library Properties.
-	 * This methods sets the relativeResource path
-	 * @param libraryPropertiesResourceRelativePath
-	 */
-	public static void setLibraryPropertiesResourceRelativePath(
-			String libraryPropertiesResourceRelativePath) {
-		WebApplicationProperties.libraryPropertiesResourceRelativePath = libraryPropertiesResourceRelativePath;
-	}
+  public static File getAppConfFolder() {
+    return appConfFolder;
+  }
 
-	/**
-	 * Returns all the properties presently available
-	 */
-	public static Properties getProperties() {
-		return ConfigurationUtils.getProperties(ConfigurationManager.getConfigInstance());
-	}
+  /**
+   * The folder where the application's properties files are located.
+   * 
+   * @param appConfFolderFromConfig
+   *          the folder as a <code>File</code> object where the application's properties files are located
+   * @param baseConfigFileName
+   *          the "base" name of the properties file. For e.g. if you have config.properties, config-test.properties, then the value to pass in is "config"
+   */
+  public static void setAppConfFolder(File appConfFolderFromConfig, String baseConfigFileName) {
+    WebApplicationProperties.appConfFolder = appConfFolderFromConfig;
+    WebApplicationProperties.baseConfigFileName = baseConfigFileName;
+  }
+
+  /**
+   * Should we load the Library Properties
+   */
+  public static boolean shouldLoadLibraryProperties() {
+    return loadLibraryProperties;
+  }
+
+  /**
+   * Set this if you would like the {@link ClasspathPropertiesConfiguration} to scan the JAR files in the classpath and load those proerties into the default
+   * Configuration
+   * 
+   * @param loadLibraryProperties
+   */
+  public static void setLoadLibraryProperties(boolean loadLibraryProperties) {
+    WebApplicationProperties.loadLibraryProperties = loadLibraryProperties;
+  }
+
+  /**
+   * Returns the relative Resource Path of the properties files in the JAR files
+   */
+  public static String getLibraryPropertiesResourceRelativePath() {
+    return libraryPropertiesResourceRelativePath;
+  }
+
+  /**
+   * Please see {@link ClasspathPropertiesConfiguration} on Library Properties. This methods sets the relativeResource path
+   * 
+   * @param libraryPropertiesResourceRelativePath
+   */
+  public static void setLibraryPropertiesResourceRelativePath(String libraryPropertiesResourceRelativePath) {
+    WebApplicationProperties.libraryPropertiesResourceRelativePath = libraryPropertiesResourceRelativePath;
+  }
+
+  /**
+   * Returns all the properties presently available
+   */
+  public static Properties getProperties() {
+    return ConfigurationUtils.getProperties(ConfigurationManager.getConfigInstance());
+  }
 }

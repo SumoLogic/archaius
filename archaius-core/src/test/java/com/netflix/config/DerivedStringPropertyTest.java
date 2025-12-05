@@ -24,39 +24,39 @@ import static org.junit.Assert.assertTrue;
 
 public class DerivedStringPropertyTest {
 
-    @Test
-    public void testPropertyChanged() {
-        final AtomicBoolean derived = new AtomicBoolean(false);
+  @Test
+  public void testPropertyChanged() {
+    final AtomicBoolean derived = new AtomicBoolean(false);
 
-        final String defaultVal = "hi";
-        DerivedStringProperty p = new DerivedStringProperty("com.netflix.hello", defaultVal) {
-            @Override
-            protected Object derive(String value) {
-                derived.set(true);
-                return String.format("%s/derived", value);
-            }
-        };
+    final String defaultVal = "hi";
+    DerivedStringProperty p = new DerivedStringProperty("com.netflix.hello", defaultVal) {
+      @Override
+      protected Object derive(String value) {
+        derived.set(true);
+        return String.format("%s/derived", value);
+      }
+    };
 
-//        p.propertyChanged();
-        p.propertyChangedInternal();
-        assertTrue("derive() was not called", derived.get());
-        String derivedDefault = String.format("%s/derived", defaultVal);
-        assertEquals(derivedDefault, p.get());
-        assertEquals(derivedDefault, p.getDefaultValue());
-    }
+    // p.propertyChanged();
+    p.propertyChangedInternal();
+    assertTrue("derive() was not called", derived.get());
+    String derivedDefault = String.format("%s/derived", defaultVal);
+    assertEquals(derivedDefault, p.get());
+    assertEquals(derivedDefault, p.getDefaultValue());
+  }
 
-    @Test
-    public void testPropertyChangedWhenDeriveThrowsException() {
-        final String defaultVal = "hi";
-        DerivedStringProperty p = new DerivedStringProperty("com.netflix.hello", defaultVal) {
-            @Override
-            protected Object derive(String value) {
-                throw new RuntimeException("oops");
-            }
-        };
+  @Test
+  public void testPropertyChangedWhenDeriveThrowsException() {
+    final String defaultVal = "hi";
+    DerivedStringProperty p = new DerivedStringProperty("com.netflix.hello", defaultVal) {
+      @Override
+      protected Object derive(String value) {
+        throw new RuntimeException("oops");
+      }
+    };
 
-        p.propertyChangedInternal();
-        assertEquals(null, p.get());
-    }
+    p.propertyChangedInternal();
+    assertEquals(null, p.get());
+  }
 
 }

@@ -17,44 +17,47 @@ package com.netflix.config.jmx;
 
 /**
  * Configuration MBean Operations are defined in this interface
+ * 
  * @author stonse
  *
  */
 public interface ConfigMBean {
 
-	/**
-	 * Returns all Properties. Yes, this should have ideally returned a
-	 * <code>Properties</code>, but doing so will make this operation dissapear
-	 * from the JConsole.
-	 * 
-	 */
-	public Object obtainProperties();
+  /**
+   * Returns all Properties. Yes, this should have ideally returned a <code>Properties</code>, but doing so will make this operation dissapear from the
+   * JConsole.
+   * 
+   */
+  public Object obtainProperties();
 
+  /**
+   * Returns the current value of a property given a key
+   * 
+   * @param key
+   */
+  public Object getProperty(String key);
 
-	/**
-	 * Returns the current value of a property given a key
-	 * @param key
-	 */
-	public Object getProperty(String key);
+  /**
+   * Adds a new property to the configuration
+   * 
+   * @param key
+   * @param value
+   */
+  public void addProperty(String key, String value);
 
-	/**
-	 * Adds a new property to the configuration
-	 * @param key
-	 * @param value
-	 */
-	public void addProperty(String key, String value);
+  /**
+   * Updates an existing property with the new value
+   * 
+   * @param key
+   * @param value
+   */
+  public void updateProperty(String key, String value);
 
-	/**
-	 * Updates an existing property with the new value
-	 * @param key
-	 * @param value
-	 */
-	public void updateProperty(String key, String value);
-
-	/**
-	 * Deletes the property identified by the passed in key
-	 * @param key
-	 */
-	public void clearProperty(String key);
+  /**
+   * Deletes the property identified by the passed in key
+   * 
+   * @param key
+   */
+  public void clearProperty(String key);
 
 }

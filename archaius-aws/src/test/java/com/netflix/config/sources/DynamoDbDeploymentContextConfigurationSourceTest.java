@@ -28,53 +28,50 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * User: gorzell
- * Date: 1/17/13
- * Time: 10:18 AM
- * You should write something useful here.
+ * User: gorzell Date: 1/17/13 Time: 10:18 AM You should write something useful here.
  */
 public class DynamoDbDeploymentContextConfigurationSourceTest {
-    private static Collection<PropertyWithDeploymentContext> propCollection1;
-    private static Collection<PropertyWithDeploymentContext> propCollection2;
+  private static Collection<PropertyWithDeploymentContext> propCollection1;
+  private static Collection<PropertyWithDeploymentContext> propCollection2;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        propCollection1 = new LinkedList<PropertyWithDeploymentContext>();
-        propCollection1.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "foo", "bar"));
-        propCollection1.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "goo", "goo"));
-        propCollection1.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "boo", "who"));
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    propCollection1 = new LinkedList<PropertyWithDeploymentContext>();
+    propCollection1.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "foo", "bar"));
+    propCollection1.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "goo", "goo"));
+    propCollection1.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "boo", "who"));
 
-        propCollection2 = new LinkedList<PropertyWithDeploymentContext>();
-        propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "foo", "bar"));
-        propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "goo", "boo"));
-        propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "prod", "goo", "foo"));
-        propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "boo", "who"));
+    propCollection2 = new LinkedList<PropertyWithDeploymentContext>();
+    propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "foo", "bar"));
+    propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "goo", "boo"));
+    propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "prod", "goo", "foo"));
+    propCollection2.add(new PropertyWithDeploymentContext(DeploymentContext.ContextKey.environment, "test", "boo", "who"));
 
-        ConfigurationManager.getConfigInstance().setProperty(ConfigurationBasedDeploymentContext.DEPLOYMENT_ENVIRONMENT_PROPERTY, "test");
-    }
+    ConfigurationManager.getConfigInstance().setProperty(ConfigurationBasedDeploymentContext.DEPLOYMENT_ENVIRONMENT_PROPERTY, "test");
+  }
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+  }
 
-    @Test
-    public void testPoll() throws Exception {
-        DynamoDbDeploymentContextTableCache mockedCache = mock(DynamoDbDeploymentContextTableCache.class);
-        when(mockedCache.getProperties()).thenReturn(propCollection1, propCollection2);
+  @Test
+  public void testPoll() throws Exception {
+    DynamoDbDeploymentContextTableCache mockedCache = mock(DynamoDbDeploymentContextTableCache.class);
+    when(mockedCache.getProperties()).thenReturn(propCollection1, propCollection2);
 
-        DynamoDbDeploymentContextConfigurationSource testConfigSource =
-                new DynamoDbDeploymentContextConfigurationSource(mockedCache, DeploymentContext.ContextKey.environment);
+    DynamoDbDeploymentContextConfigurationSource testConfigSource = new DynamoDbDeploymentContextConfigurationSource(mockedCache,
+      DeploymentContext.ContextKey.environment);
 
-        PollResult result = testConfigSource.poll(false, null);
-        assertEquals(3, result.getComplete().size());
-        assertEquals(result.getComplete().get("foo"), "bar");
-        assertEquals(result.getComplete().get("goo"), "goo");
-        assertEquals(result.getComplete().get("boo"), "who");
+    PollResult result = testConfigSource.poll(false, null);
+    assertEquals(3, result.getComplete().size());
+    assertEquals(result.getComplete().get("foo"), "bar");
+    assertEquals(result.getComplete().get("goo"), "goo");
+    assertEquals(result.getComplete().get("boo"), "who");
 
-        result = testConfigSource.poll(false, null);
-        assertEquals(3, result.getComplete().size());
-        assertEquals(result.getComplete().get("foo"),"bar");
-        assertEquals(result.getComplete().get("goo"), "boo");
-        assertEquals(result.getComplete().get("boo"), "who");
-    }
+    result = testConfigSource.poll(false, null);
+    assertEquals(3, result.getComplete().size());
+    assertEquals(result.getComplete().get("foo"), "bar");
+    assertEquals(result.getComplete().get("goo"), "boo");
+    assertEquals(result.getComplete().get("boo"), "who");
+  }
 }

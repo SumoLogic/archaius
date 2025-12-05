@@ -20,29 +20,29 @@ import java.util.List;
 import com.google.common.base.Splitter;
 
 public class DynamicStringListProperty extends DynamicListProperty<String> {
-    public DynamicStringListProperty(String propName, String defaultValue) {
-        super(propName, defaultValue);
-    }
+  public DynamicStringListProperty(String propName, String defaultValue) {
+    super(propName, defaultValue);
+  }
 
-    public DynamicStringListProperty(String propName, List<String> defaultValue) {
-        super(propName, defaultValue);
-    }
+  public DynamicStringListProperty(String propName, List<String> defaultValue) {
+    super(propName, defaultValue);
+  }
 
-    public DynamicStringListProperty(String propName, String defaultValue, String listDelimiterRegex) {
-        super(propName, defaultValue, listDelimiterRegex);
-    }
+  public DynamicStringListProperty(String propName, String defaultValue, String listDelimiterRegex) {
+    super(propName, defaultValue, listDelimiterRegex);
+  }
 
-    public DynamicStringListProperty(String propName, List<String> defaultValue, String listDelimiterRegex) {
-        super(propName, defaultValue, listDelimiterRegex);
-    }
+  public DynamicStringListProperty(String propName, List<String> defaultValue, String listDelimiterRegex) {
+    super(propName, defaultValue, listDelimiterRegex);
+  }
 
-    public DynamicStringListProperty(String propName, List<String> defaultValue, Splitter splitter) {
-        super(propName, defaultValue, splitter);
-    }
+  public DynamicStringListProperty(String propName, List<String> defaultValue, Splitter splitter) {
+    super(propName, defaultValue, splitter);
+  }
 
-    @Override
-    protected String from(String value) {
-        return value;
-    }
-    
+  @Override
+  protected String from(String value) {
+    return value;
+  }
+
 }
