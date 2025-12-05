@@ -35,6 +35,10 @@ subprojects {
 
     group = "com.netflix.${githubProjectName}"
 
+//    tasks.withType(JavaCompile) {
+//        options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+//    }
+
     //JavaDoc linting is enabled by default and will fail
     tasks.withType(Javadoc).all {
       options.addBooleanOption('Xdoclint:none', true)
@@ -48,8 +52,8 @@ subprojects {
     test {
         maxHeapSize = '2g' // or however much memory the tests need
         testLogging {
-            events 'started', 'failed', 'passed', 'skipped'
-            showStandardStreams  = true
+            events 'failed', 'passed', 'skipped'
+            showStandardStreams = false
         }
     }
 
@@ -79,7 +83,7 @@ subprojects {
 
 project(':archaius-core') {
     dependencies {
-        api 'commons-configuration:commons-configuration:1.8'
+        api 'commons-configuration:commons-configuration:1.10'
         api 'org.slf4j:slf4j-api:1.6.4'
         api 'com.google.guava:guava:16.0'
         api 'com.fasterxml.jackson.core:jackson-annotations:2.4.3'

@@ -92,7 +92,7 @@ public class ConfigurationManager {
         try {
             String className = System.getProperty("archaius.default.configuration.class");
             if (className != null) {
-                instance = (AbstractConfiguration) Class.forName(className).newInstance();
+                instance = (AbstractConfiguration) Class.forName(className).getDeclaredConstructor().newInstance();
                 customConfigurationInstalled = true;
             } else {
                 String factoryName = System.getProperty("archaius.default.configuration.factory");
@@ -105,7 +105,7 @@ public class ConfigurationManager {
             }
             String contextClassName = System.getProperty("archaius.default.deploymentContext.class");
             if (contextClassName != null) {
-                setDeploymentContext((DeploymentContext) Class.forName(contextClassName).newInstance());
+                setDeploymentContext((DeploymentContext) Class.forName(contextClassName).getDeclaredConstructor().newInstance());
             } else {
                 String factoryName = System.getProperty("archaius.default.deploymentContext.factory");
                 if (factoryName != null) {
