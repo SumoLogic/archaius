@@ -21,9 +21,8 @@ package com.netflix.config;
  * @author cfregly
  */
 public interface WatchedUpdateListener {
-    /**
-     * Updates the configuration either incrementally or fully depending on the type of
-     * {@link WatchedUpdateResult} that is passed.
-     */
-    public void updateConfiguration(WatchedUpdateResult result);
+  /**
+   * Updates the configuration either incrementally or fully depending on the type of {@link WatchedUpdateResult} that is passed.
+   */
+  public void updateConfiguration(WatchedUpdateResult result);
 }

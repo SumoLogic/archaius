@@ -12,65 +12,64 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TypesafeConfigurationSource implements PolledConfigurationSource
-{
-    private static final Logger log = LoggerFactory.getLogger(TypesafeConfigurationSource.class);
+public class TypesafeConfigurationSource implements PolledConfigurationSource {
+  private static final Logger log = LoggerFactory.getLogger(TypesafeConfigurationSource.class);
 
-    @Override
-	public PollResult poll(boolean initial, Object checkPoint) throws Exception {
-		Map<String, Object> map = load();
-		return PollResult.createFull(map);
-	}
+  @Override
+  public PollResult poll(boolean initial, Object checkPoint) throws Exception {
+    Map<String, Object> map = load();
+    return PollResult.createFull(map);
+  }
 
-	synchronized Map<String, Object> load() throws Exception {
-        Config config = config();
+  synchronized Map<String, Object> load() throws Exception {
+    Config config = config();
 
-        Map<String, Object> map = new HashMap<String, Object>();
+    Map<String, Object> map = new HashMap<String, Object>();
 
-        for (Map.Entry<String, ConfigValue> entry : config.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue().unwrapped();
+    for (Map.Entry<String, ConfigValue> entry : config.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue().unwrapped();
 
-            if (value instanceof List) {
-                if (false == safeArrayKeyExpansion(config, key)) {
-                    log.error("Unable to expand array: {}", key);
-                    continue;
-                }
-
-                List values = (List) value;
-
-                map.put(lengthKey(key), values.size());
-
-                for (int i = 0; i < values.size(); i++) {
-                    map.put(indexedKey(key, i), values.get(i));
-                }
-            } else {
-                map.put(key, value);
-            }
+      if (value instanceof List) {
+        if (false == safeArrayKeyExpansion(config, key)) {
+          log.error("Unable to expand array: {}", key);
+          continue;
         }
 
-        return map;
-    }
+        List values = (List) value;
 
-    private boolean safeArrayKeyExpansion(Config config, String prefix) {
-        if (config.hasPath(lengthKey(prefix))) {
-            return false;
+        map.put(lengthKey(key), values.size());
+
+        for (int i = 0; i < values.size(); i++) {
+          map.put(indexedKey(key, i), values.get(i));
         }
-
-        // don't need to test element expansion, as "[]" are illegal key characters in Typesafe Config
-
-        return true;
+      } else {
+        map.put(key, value);
+      }
     }
 
-    private String lengthKey(String prefix) {
-        return prefix + ".length";
+    return map;
+  }
+
+  private boolean safeArrayKeyExpansion(Config config, String prefix) {
+    if (config.hasPath(lengthKey(prefix))) {
+      return false;
     }
 
-    private String indexedKey(String prefix, int index) {
-        return String.format("%s[%d]", prefix, index);
-    }
+    // don't need to test element expansion, as "[]" are illegal key characters in Typesafe Config
 
-    protected Config config() {
-        return ConfigFactory.load();
-    }
+    return true;
+  }
+
+  private String lengthKey(String prefix) {
+    return prefix + ".length";
+  }
+
+  private String indexedKey(String prefix, int index) {
+    return String.format("%s[%d]", prefix, index);
+  }
+
+  protected Config config() {
+    return ConfigFactory.load();
+  }
 }

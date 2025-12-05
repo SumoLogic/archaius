@@ -15,14 +15,13 @@
  */
 package com.netflix.config.samples;
 
-
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
- * A Sample Application built to showcase how to use the default ConcurrentCompositeConfiguration
- * registered with {@link DynamicPropertyFactory} and automatic registration with JMX
+ * A Sample Application built to showcase how to use the default ConcurrentCompositeConfiguration registered with {@link DynamicPropertyFactory} and automatic
+ * registration with JMX
  * <p>
  * To run this sample application, add the following jars to your classpath:
  * <ul>
@@ -36,32 +35,31 @@ import com.netflix.config.DynamicPropertyFactory;
  *
  */
 public class SampleApplicationWithDefaultConfiguration {
-    static {
-        // sampleapp.properties is packaged within the shipped jar file
-        System.setProperty("archaius.configurationSource.defaultFileName", "sampleapp.properties");
-        System.setProperty(DynamicPropertyFactory.ENABLE_JMX, "true");
-        System.setProperty("com.netflix.config.samples.SampleApp.SampleBean.sensitiveBeanData", "value from system property");
-    }
-    
-    public static void main(String[] args) {
-        new SampleApplication();
-        ConcurrentCompositeConfiguration myConfiguration = 
-            (ConcurrentCompositeConfiguration) DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
-        
+  static {
+    // sampleapp.properties is packaged within the shipped jar file
+    System.setProperty("archaius.configurationSource.defaultFileName", "sampleapp.properties");
+    System.setProperty(DynamicPropertyFactory.ENABLE_JMX, "true");
+    System.setProperty("com.netflix.config.samples.SampleApp.SampleBean.sensitiveBeanData", "value from system property");
+  }
 
-        ConcurrentMapConfiguration subConfig = new ConcurrentMapConfiguration();
-        subConfig.setProperty("com.netflix.config.samples.SampleApp.SampleBean.name", "A Coffee Bean from Cuba");
-        myConfiguration.setProperty("com.netflix.config.samples.sampleapp.prop1", "value1");
+  public static void main(String[] args) {
+    new SampleApplication();
+    ConcurrentCompositeConfiguration myConfiguration = (ConcurrentCompositeConfiguration) DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
 
-        myConfiguration.addConfiguration(subConfig);
-        System.out.println("Started SampleApplication. Launch JConsole to inspect and update properties.");
-        System.out.println("To see how callback work, update property com.netflix.config.samples.SampleApp.SampleBean.sensitiveBeanData from BaseConfigBean in JConsole");
-        
-        SampleBean sampleBean = new SampleBean();
-        // this should show the bean taking properties from two different sources
-        // property "com.netflix.config.samples.SampleApp.SampleBean.numSeeds" is from sampleapp.properites
-        // property "com.netflix.config.samples.SampleApp.SampleBean.name" is from subConfig added above 
-        System.out.println("SampleBean:" + sampleBean);
-        System.out.println(sampleBean.getName());
-    }
+    ConcurrentMapConfiguration subConfig = new ConcurrentMapConfiguration();
+    subConfig.setProperty("com.netflix.config.samples.SampleApp.SampleBean.name", "A Coffee Bean from Cuba");
+    myConfiguration.setProperty("com.netflix.config.samples.sampleapp.prop1", "value1");
+
+    myConfiguration.addConfiguration(subConfig);
+    System.out.println("Started SampleApplication. Launch JConsole to inspect and update properties.");
+    System.out
+      .println("To see how callback work, update property com.netflix.config.samples.SampleApp.SampleBean.sensitiveBeanData from BaseConfigBean in JConsole");
+
+    SampleBean sampleBean = new SampleBean();
+    // this should show the bean taking properties from two different sources
+    // property "com.netflix.config.samples.SampleApp.SampleBean.numSeeds" is from sampleapp.properites
+    // property "com.netflix.config.samples.SampleApp.SampleBean.name" is from subConfig added above
+    System.out.println("SampleBean:" + sampleBean);
+    System.out.println(sampleBean.getName());
+  }
 }

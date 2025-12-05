@@ -17,26 +17,27 @@ package com.netflix.config;
 
 /**
  * A dynamic property whose value is a string.
- * <p>Use APIs in {@link DynamicPropertyFactory} to create instance of this class.
+ * <p>
+ * Use APIs in {@link DynamicPropertyFactory} to create instance of this class.
  * 
  * @author awang
  *
  */
 public class DynamicStringProperty extends PropertyWrapper<String> {
 
-    public DynamicStringProperty(String propName, String defaultValue) {
-        super(propName, defaultValue);
-    }
+  public DynamicStringProperty(String propName, String defaultValue) {
+    super(propName, defaultValue);
+  }
 
-    /**
-     * Get the current value from the underlying DynamicProperty
-     */
-    public String get() {
-        return prop.getString(defaultValue);
-    }
+  /**
+   * Get the current value from the underlying DynamicProperty
+   */
+  public String get() {
+    return prop.getString(defaultValue);
+  }
 
-    @Override
-    public String getValue() {
-        return get();
-    }
+  @Override
+  public String getValue() {
+    return get();
+  }
 }

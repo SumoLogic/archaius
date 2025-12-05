@@ -17,23 +17,24 @@ package com.netflix.config;
 
 /**
  * A dynamic property that contains boolean value.
- * <p>Use APIs in {@link DynamicPropertyFactory} to create instance of this class.
+ * <p>
+ * Use APIs in {@link DynamicPropertyFactory} to create instance of this class.
  * 
  * @author awang
  *
  */
 public class DynamicBooleanProperty extends PropertyWrapper<Boolean> {
-    public DynamicBooleanProperty(String propName, boolean defaultValue) {
-        super(propName, Boolean.valueOf(defaultValue));
-    }
-    /**
-     * Get the current value from the underlying DynamicProperty
-     */
-    public boolean get() {
-        return prop.getBoolean(defaultValue).booleanValue();
-    }
-    @Override
-    public Boolean getValue() {
-        return get();
-    }
+  public DynamicBooleanProperty(String propName, boolean defaultValue) {
+    super(propName, Boolean.valueOf(defaultValue));
+  }
+  /**
+   * Get the current value from the underlying DynamicProperty
+   */
+  public boolean get() {
+    return prop.getBoolean(defaultValue).booleanValue();
+  }
+  @Override
+  public Boolean getValue() {
+    return get();
+  }
 }

@@ -35,136 +35,125 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * User: gorzell
- * Date: 1/17/13
- * Time: 10:18 AM
- * This leverages some of the semantics of the PollingSource in order to have one place where the full table scan from
- * Dynamo is cached.  It is mean to be consumed but a number of DeploymentContext aware sources to keep them from all
- * having to load the table separately.
+ * User: gorzell Date: 1/17/13 Time: 10:18 AM This leverages some of the semantics of the PollingSource in order to have one place where the full table scan
+ * from Dynamo is cached. It is mean to be consumed but a number of DeploymentContext aware sources to keep them from all having to load the table separately.
  */
 public class DynamoDbDeploymentContextTableCache extends AbstractDynamoDbConfigurationSource<PropertyWithDeploymentContext> {
-    private static Logger log = LoggerFactory.getLogger(DynamoDbDeploymentContextTableCache.class);
+  private static Logger log = LoggerFactory.getLogger(DynamoDbDeploymentContextTableCache.class);
 
-    //Property names
-    static final String contextKeyAttributePropertyName = "com.netflix.config.dynamo.contextKeyAttributeName";
-    static final String contextValueAttributePropertyName = "com.netflix.config.dynamo.contextValueAttributeName";
+  // Property names
+  static final String contextKeyAttributePropertyName = "com.netflix.config.dynamo.contextKeyAttributeName";
+  static final String contextValueAttributePropertyName = "com.netflix.config.dynamo.contextValueAttributeName";
 
-    //Property defaults
-    static final String defaultContextKeyAttribute = "contextKey";
-    static final String defaultContextValueAttribute = "contextValue";
+  // Property defaults
+  static final String defaultContextKeyAttribute = "contextKey";
+  static final String defaultContextValueAttribute = "contextValue";
 
-    //Dynamic Properties
-    private final DynamicStringProperty contextKeyAttributeName = DynamicPropertyFactory.getInstance()
-            .getStringProperty(contextKeyAttributePropertyName, defaultContextKeyAttribute);
-    private final DynamicStringProperty contextValueAttributeName = DynamicPropertyFactory.getInstance()
-            .getStringProperty(contextValueAttributePropertyName, defaultContextValueAttribute);
+  // Dynamic Properties
+  private final DynamicStringProperty contextKeyAttributeName = DynamicPropertyFactory.getInstance().getStringProperty(contextKeyAttributePropertyName,
+    defaultContextKeyAttribute);
+  private final DynamicStringProperty contextValueAttributeName = DynamicPropertyFactory.getInstance().getStringProperty(contextValueAttributePropertyName,
+    defaultContextValueAttribute);
 
-    // Delay defaults
-    static final int defaultInitialDelayMillis = 30000;
-    static final int defaultDelayMillis = 60000;
+  // Delay defaults
+  static final int defaultInitialDelayMillis = 30000;
+  static final int defaultDelayMillis = 60000;
 
-    private final int initialDelayMillis;
-    private final int delayMillis;
+  private final int initialDelayMillis;
+  private final int delayMillis;
 
-    private ScheduledExecutorService executor;
-    private volatile Map<String, PropertyWithDeploymentContext> cachedTable = new HashMap<String, PropertyWithDeploymentContext>();
+  private ScheduledExecutorService executor;
+  private volatile Map<String, PropertyWithDeploymentContext> cachedTable = new HashMap<String, PropertyWithDeploymentContext>();
 
-    public DynamoDbDeploymentContextTableCache(DynamoDbClient dbClient) {
-        this(dbClient, defaultInitialDelayMillis, defaultDelayMillis);
+  public DynamoDbDeploymentContextTableCache(DynamoDbClient dbClient) {
+    this(dbClient, defaultInitialDelayMillis, defaultDelayMillis);
+  }
+
+  public DynamoDbDeploymentContextTableCache(DynamoDbClient dbClient, int initialDelayMillis, int delayMillis) {
+    super(dbClient);
+    this.initialDelayMillis = initialDelayMillis;
+    this.delayMillis = delayMillis;
+    start();
+  }
+
+  private synchronized void schedule(Runnable runnable) {
+    executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+      @Override
+      public Thread newThread(Runnable r) {
+        Thread t = new Thread(r, "pollingDynamoTableCache");
+        t.setDaemon(true);
+        return t;
+      }
+    });
+    executor.scheduleWithFixedDelay(runnable, initialDelayMillis, delayMillis, TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Stop polling the source table
+   */
+  public void stop() {
+    if (executor != null) {
+      executor.shutdown();
+      executor = null;
     }
+  }
 
-    public DynamoDbDeploymentContextTableCache(DynamoDbClient dbClient, int initialDelayMillis, int delayMillis) {
-        super(dbClient);
-        this.initialDelayMillis = initialDelayMillis;
-        this.delayMillis = delayMillis;
-        start();
-    }
+  private void start() {
+    cachedTable = loadPropertiesFromTable(tableName.get());
+    schedule(getPollingRunnable());
+  }
 
-    private synchronized void schedule(Runnable runnable) {
-        executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, "pollingDynamoTableCache");
-                t.setDaemon(true);
-                return t;
-            }
-        });
-        executor.scheduleWithFixedDelay(runnable, initialDelayMillis, delayMillis, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Stop polling the source table
-     */
-    public void stop() {
-        if (executor != null) {
-            executor.shutdown();
-            executor = null;
+  private Runnable getPollingRunnable() {
+    return new Runnable() {
+      public void run() {
+        log.debug("Dynamo cached polling started");
+        try {
+          Map<String, PropertyWithDeploymentContext> newMap = loadPropertiesFromTable(tableName.get());
+          cachedTable = newMap;
+        } catch (Throwable e) {
+          log.error("Error getting result from polling source", e);
+          return;
         }
-    }
+      }
+    };
+  }
 
-    private void start() {
-        cachedTable = loadPropertiesFromTable(tableName.get());
-        schedule(getPollingRunnable());
-    }
+  /**
+   * Scan the table in dynamo and create a map with the results. In this case the map has a complex type as the value, so that Deployment Context is taken into
+   * account.
+   *
+   * @param table
+   * @return
+   */
+  @Override
+  protected Map<String, PropertyWithDeploymentContext> loadPropertiesFromTable(String table) {
+    Map<String, PropertyWithDeploymentContext> propertyMap = new HashMap<String, PropertyWithDeploymentContext>();
+    Map<String, AttributeValue> lastKeysEvaluated = null;
+    do {
+      ScanRequest scanRequest = ScanRequest.builder().tableName(table).exclusiveStartKey(lastKeysEvaluated).build();
+      ScanResponse result = dbScanWithThroughputBackOff(scanRequest);
+      for (Map<String, AttributeValue> item : result.items()) {
+        String keyVal = item.get(keyAttributeName.get()).s();
 
-    private Runnable getPollingRunnable() {
-        return new Runnable() {
-            public void run() {
-                log.debug("Dynamo cached polling started");
-                try {
-                    Map<String, PropertyWithDeploymentContext> newMap = loadPropertiesFromTable(tableName.get());
-                    cachedTable = newMap;
-                } catch (Throwable e) {
-                    log.error("Error getting result from polling source", e);
-                    return;
-                }
-            }
-        };
-    }
+        // Need to deal with the fact that these attributes might not exist
+        DeploymentContext.ContextKey contextKey = item.containsKey(contextKeyAttributeName.get())
+          ? DeploymentContext.ContextKey.valueOf(item.get(contextKeyAttributeName.get()).s())
+          : null;
+        String contextVal = item.containsKey(contextValueAttributeName.get()) ? item.get(contextValueAttributeName.get()).s() : null;
+        String key = keyVal + ";" + contextKey + ";" + contextVal;
+        propertyMap.put(key, new PropertyWithDeploymentContext(contextKey, contextVal, keyVal, item.get(valueAttributeName.get()).s()));
+      }
+      lastKeysEvaluated = result.lastEvaluatedKey();
+    } while (!lastKeysEvaluated.isEmpty());
+    return propertyMap;
+  }
 
-    /**
-     * Scan the table in dynamo and create a map with the results.  In this case the map has a complex type as the value,
-     * so that Deployment Context is taken into account.
-     *
-     * @param table
-     * @return
-     */
-    @Override
-    protected Map<String, PropertyWithDeploymentContext> loadPropertiesFromTable(String table) {
-        Map<String, PropertyWithDeploymentContext> propertyMap = new HashMap<String, PropertyWithDeploymentContext>();
-        Map<String, AttributeValue> lastKeysEvaluated = null;
-        do {
-            ScanRequest scanRequest = ScanRequest.builder()
-                    .tableName(table)
-                    .exclusiveStartKey(lastKeysEvaluated)
-                    .build();
-            ScanResponse result = dbScanWithThroughputBackOff(scanRequest);
-            for (Map<String, AttributeValue> item : result.items()) {
-                String keyVal = item.get(keyAttributeName.get()).s();
-
-                //Need to deal with the fact that these attributes might not exist
-                DeploymentContext.ContextKey contextKey = item.containsKey(contextKeyAttributeName.get()) ? DeploymentContext.ContextKey.valueOf(item.get(contextKeyAttributeName.get()).s()) : null;
-                String contextVal = item.containsKey(contextValueAttributeName.get()) ? item.get(contextValueAttributeName.get()).s() : null;
-                String key = keyVal + ";" + contextKey + ";" + contextVal;
-                propertyMap.put(key,
-                        new PropertyWithDeploymentContext(
-                                contextKey,
-                                contextVal,
-                                keyVal,
-                                item.get(valueAttributeName.get()).s()
-                        ));
-            }
-            lastKeysEvaluated = result.lastEvaluatedKey();
-        } while (!lastKeysEvaluated.isEmpty());
-        return propertyMap;
-    }
-
-    /**
-     * Get the current values in the cache.
-     *
-     * @return
-     */
-    public Collection<PropertyWithDeploymentContext> getProperties() {
-        return cachedTable.values();
-    }
+  /**
+   * Get the current values in the cache.
+   *
+   * @return
+   */
+  public Collection<PropertyWithDeploymentContext> getProperties() {
+    return cachedTable.values();
+  }
 }

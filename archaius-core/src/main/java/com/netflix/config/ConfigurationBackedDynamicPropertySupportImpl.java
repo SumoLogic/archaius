@@ -19,53 +19,53 @@ import org.apache.commons.configuration.AbstractConfiguration;
 
 public class ConfigurationBackedDynamicPropertySupportImpl implements DynamicPropertySupport {
 
-    private final AbstractConfiguration config;
-        
-    public ConfigurationBackedDynamicPropertySupportImpl(AbstractConfiguration config) {
-        if (config == null) {
-            throw new NullPointerException("config is null");
-        }
-        this.config = config;
-    }
-    
-    @Override
-    public String getString(String key) {
-        try {
-            String values[] = config.getStringArray(key);
-            if (values == null) {
-                return null;
-            }
-            if (values.length == 0) {
-                return config.getString(key);
-            } else if (values.length == 1) {
-                return values[0];
-            }
+  private final AbstractConfiguration config;
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < values.length; i++) {
-                sb.append(values[i]);
-                if (i != values.length - 1) {
-                    sb.append(",");
-                }
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            Object v = config.getProperty(key);
-            if (v != null) {
-                return String.valueOf(v);
-            } else {
-                return null;
-            }
-        }
+  public ConfigurationBackedDynamicPropertySupportImpl(AbstractConfiguration config) {
+    if (config == null) {
+      throw new NullPointerException("config is null");
     }
+    this.config = config;
+  }
 
-    @Override
-    public void addConfigurationListener(PropertyListener expandedConfigListener) {
-        ExpandedConfigurationListenerAdapter nl = new ExpandedConfigurationListenerAdapter(expandedConfigListener);
-        config.addConfigurationListener(nl);    
+  @Override
+  public String getString(String key) {
+    try {
+      String values[] = config.getStringArray(key);
+      if (values == null) {
+        return null;
+      }
+      if (values.length == 0) {
+        return config.getString(key);
+      } else if (values.length == 1) {
+        return values[0];
+      }
+
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < values.length; i++) {
+        sb.append(values[i]);
+        if (i != values.length - 1) {
+          sb.append(",");
+        }
+      }
+      return sb.toString();
+    } catch (Exception e) {
+      Object v = config.getProperty(key);
+      if (v != null) {
+        return String.valueOf(v);
+      } else {
+        return null;
+      }
     }
-    
-    public final AbstractConfiguration getConfiguration() {
-        return config;
-    }
+  }
+
+  @Override
+  public void addConfigurationListener(PropertyListener expandedConfigListener) {
+    ExpandedConfigurationListenerAdapter nl = new ExpandedConfigurationListenerAdapter(expandedConfigListener);
+    config.addConfigurationListener(nl);
+  }
+
+  public final AbstractConfiguration getConfiguration() {
+    return config;
+  }
 }

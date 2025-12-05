@@ -35,138 +35,137 @@ import com.netflix.config.validation.ValidationException;
 /**
  * Apply the {@link WatchedUpdateResult} to the configuration.<BR>
  * 
- * If the result is a full result from source, each property in the result is added/set in the configuration. Any
- * property that is in the configuration - but not in the result - is deleted if ignoreDeletesFromSource is false.<BR>
+ * If the result is a full result from source, each property in the result is added/set in the configuration. Any property that is in the configuration - but
+ * not in the result - is deleted if ignoreDeletesFromSource is false.<BR>
  * 
- * If the result is incremental, properties will be added and changed from the partial result in the configuration.
- * Deleted properties are deleted from configuration iff ignoreDeletesFromSource is false.
+ * If the result is incremental, properties will be added and changed from the partial result in the configuration. Deleted properties are deleted from
+ * configuration iff ignoreDeletesFromSource is false.
  * 
  * This code is shared by both {@link AbstractPollingScheduler} and {@link DynamicWatchedConfiguration}.
  */
 public class DynamicPropertyUpdater {
-    private static Logger logger = LoggerFactory.getLogger(DynamicPropertyUpdater.class);
+  private static Logger logger = LoggerFactory.getLogger(DynamicPropertyUpdater.class);
 
-    /**
-     * Updates the properties in the config param given the contents of the result param.
-     * 
-     * @param result
-     *            either an incremental or full set of data
-     * @param config
-     *            underlying config map
-     * @param ignoreDeletesFromSource
-     *            if true, deletes will be skipped
-     */
-    public void updateProperties(final WatchedUpdateResult result, final Configuration config,
-            final boolean ignoreDeletesFromSource) {
-        if (result == null || !result.hasChanges()) {
-            return;
-        }
-
-        logger.debug("incremental result? [{}]", result.isIncremental());
-        logger.debug("ignored deletes from source? [{}]", ignoreDeletesFromSource);
-
-        if (!result.isIncremental()) {
-            Map<String, Object> props = result.getComplete();
-            if (props == null) {
-                return;
-            }
-            for (Entry<String, Object> entry : props.entrySet()) {
-                addOrChangeProperty(entry.getKey(), entry.getValue(), config);
-            }
-            Set<String> existingKeys = new HashSet<String>();
-            for (Iterator<String> i = config.getKeys(); i.hasNext();) {
-                existingKeys.add(i.next());
-            }
-            if (!ignoreDeletesFromSource) {
-                for (String key : existingKeys) {
-                    if (!props.containsKey(key)) {
-                        deleteProperty(key, config);
-                    }
-                }
-            }
-        } else {
-            Map<String, Object> props = result.getAdded();
-            if (props != null) {
-                for (Entry<String, Object> entry : props.entrySet()) {
-                    addOrChangeProperty(entry.getKey(), entry.getValue(), config);
-                }
-            }
-            props = result.getChanged();
-            if (props != null) {
-                for (Entry<String, Object> entry : props.entrySet()) {
-                    addOrChangeProperty(entry.getKey(), entry.getValue(), config);
-                }
-            }
-            if (!ignoreDeletesFromSource) {
-                props = result.getDeleted();
-                if (props != null) {
-                    for (String name : props.keySet()) {
-                        deleteProperty(name, config);
-                    }
-                }
-            }
-        }
+  /**
+   * Updates the properties in the config param given the contents of the result param.
+   * 
+   * @param result
+   *          either an incremental or full set of data
+   * @param config
+   *          underlying config map
+   * @param ignoreDeletesFromSource
+   *          if true, deletes will be skipped
+   */
+  public void updateProperties(final WatchedUpdateResult result, final Configuration config, final boolean ignoreDeletesFromSource) {
+    if (result == null || !result.hasChanges()) {
+      return;
     }
 
-    /**
-     * Add or update the property in the underlying config depending on if it exists
-     * 
-     * @param name
-     * @param newValue
-     * @param config
-     */
-    void addOrChangeProperty(final String name, final Object newValue, final Configuration config) {
-        // We do not want to abort the operation due to failed validation on one property
-        try {
-            if (!config.containsKey(name)) {
-                logger.debug("adding property key [{}], value [{}]", name, newValue);
-    
-                config.addProperty(name, newValue);
-            } else {
-                Object oldValue = config.getProperty(name);
-             
-                if (newValue != null) {
-                    Object newValueArray;
-                    if (oldValue instanceof CopyOnWriteArrayList && AbstractConfiguration.getDefaultListDelimiter() != '\0'){
-                        newValueArray = 
-                                        new CopyOnWriteArrayList();
-                        
-                      Iterable<String> stringiterator = Splitter.on(AbstractConfiguration.getDefaultListDelimiter()).omitEmptyStrings().trimResults().split((String)newValue);
-                      for(String s :stringiterator){
-                            ((CopyOnWriteArrayList) newValueArray).add(s);
-                        }
-                      } else {
-                          newValueArray = newValue;
-                      }
-                  
-                    if (!newValueArray.equals(oldValue)) {
-                        logger.debug("updating property key [{}], value [{}]", name, newValue);
-    
-                        config.setProperty(name, newValue);
-                    }
-                   
-                } else if (oldValue != null) {
-                    logger.debug("nulling out property key [{}]", name);
-    
-                    config.setProperty(name, null);
-                }
+    logger.debug("incremental result? [{}]", result.isIncremental());
+    logger.debug("ignored deletes from source? [{}]", ignoreDeletesFromSource);
+
+    if (!result.isIncremental()) {
+      Map<String, Object> props = result.getComplete();
+      if (props == null) {
+        return;
+      }
+      for (Entry<String, Object> entry : props.entrySet()) {
+        addOrChangeProperty(entry.getKey(), entry.getValue(), config);
+      }
+      Set<String> existingKeys = new HashSet<String>();
+      for (Iterator<String> i = config.getKeys(); i.hasNext();) {
+        existingKeys.add(i.next());
+      }
+      if (!ignoreDeletesFromSource) {
+        for (String key : existingKeys) {
+          if (!props.containsKey(key)) {
+            deleteProperty(key, config);
+          }
+        }
+      }
+    } else {
+      Map<String, Object> props = result.getAdded();
+      if (props != null) {
+        for (Entry<String, Object> entry : props.entrySet()) {
+          addOrChangeProperty(entry.getKey(), entry.getValue(), config);
+        }
+      }
+      props = result.getChanged();
+      if (props != null) {
+        for (Entry<String, Object> entry : props.entrySet()) {
+          addOrChangeProperty(entry.getKey(), entry.getValue(), config);
+        }
+      }
+      if (!ignoreDeletesFromSource) {
+        props = result.getDeleted();
+        if (props != null) {
+          for (String name : props.keySet()) {
+            deleteProperty(name, config);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Add or update the property in the underlying config depending on if it exists
+   * 
+   * @param name
+   * @param newValue
+   * @param config
+   */
+  void addOrChangeProperty(final String name, final Object newValue, final Configuration config) {
+    // We do not want to abort the operation due to failed validation on one property
+    try {
+      if (!config.containsKey(name)) {
+        logger.debug("adding property key [{}], value [{}]", name, newValue);
+
+        config.addProperty(name, newValue);
+      } else {
+        Object oldValue = config.getProperty(name);
+
+        if (newValue != null) {
+          Object newValueArray;
+          if (oldValue instanceof CopyOnWriteArrayList && AbstractConfiguration.getDefaultListDelimiter() != '\0') {
+            newValueArray = new CopyOnWriteArrayList();
+
+            Iterable<String> stringiterator = Splitter.on(AbstractConfiguration.getDefaultListDelimiter()).omitEmptyStrings().trimResults()
+              .split((String) newValue);
+            for (String s : stringiterator) {
+              ((CopyOnWriteArrayList) newValueArray).add(s);
             }
-        } catch (ValidationException e) {
-            logger.warn("Validation failed for property " + name, e);
-        }
-    }
+          } else {
+            newValueArray = newValue;
+          }
 
-    /**
-     * Delete a property in the underlying config
-     * 
-     * @param key
-     * @param config
-     */
-    void deleteProperty(final String key, final Configuration config) {
-        if (config.containsKey(key)) {
-            logger.debug("deleting property key [" + key + "]");
+          if (!newValueArray.equals(oldValue)) {
+            logger.debug("updating property key [{}], value [{}]", name, newValue);
 
-            config.clearProperty(key);
+            config.setProperty(name, newValue);
+          }
+
+        } else if (oldValue != null) {
+          logger.debug("nulling out property key [{}]", name);
+
+          config.setProperty(name, null);
         }
+      }
+    } catch (ValidationException e) {
+      logger.warn("Validation failed for property " + name, e);
     }
+  }
+
+  /**
+   * Delete a property in the underlying config
+   * 
+   * @param key
+   * @param config
+   */
+  void deleteProperty(final String key, final Configuration config) {
+    if (config.containsKey(key)) {
+      logger.debug("deleting property key [" + key + "]");
+
+      config.clearProperty(key);
+    }
+  }
 }

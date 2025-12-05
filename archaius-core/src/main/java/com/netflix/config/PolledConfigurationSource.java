@@ -22,14 +22,17 @@ package com.netflix.config;
  */
 public interface PolledConfigurationSource {
 
-    /**
-     * Poll the configuration source to get the latest content.
-     * 
-     * @param initial true if this operation is the first poll.
-     * @param checkPoint Object that is used to determine the starting point if the result returned is incremental. 
-     *          Null if there is no check point or the caller wishes to get the full content.
-     * @return The content of the configuration which may be full or incremental.
-     * @throws Exception If any exception occurs when fetching the configurations.
-     */
-    public PollResult poll(boolean initial, Object checkPoint) throws Exception;    
+  /**
+   * Poll the configuration source to get the latest content.
+   * 
+   * @param initial
+   *          true if this operation is the first poll.
+   * @param checkPoint
+   *          Object that is used to determine the starting point if the result returned is incremental. Null if there is no check point or the caller wishes to
+   *          get the full content.
+   * @return The content of the configuration which may be full or incremental.
+   * @throws Exception
+   *           If any exception occurs when fetching the configurations.
+   */
+  public PollResult poll(boolean initial, Object checkPoint) throws Exception;
 }

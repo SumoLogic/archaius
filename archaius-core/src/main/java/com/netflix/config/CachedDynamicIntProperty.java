@@ -18,50 +18,49 @@ package com.netflix.config;
 /**
  * An implementation of {@link DynamicIntProperty} that caches the primitive value whenever it is changed.
  *
- * This can give improved performance due to avoiding the unboxing, at the expense of additional
- * memory usage.
+ * This can give improved performance due to avoiding the unboxing, at the expense of additional memory usage.
  *
  * @author Mike Smith
  *
  */
 public class CachedDynamicIntProperty extends DynamicIntProperty {
 
-    protected volatile int primitiveValue;
+  protected volatile int primitiveValue;
 
-    public CachedDynamicIntProperty(String propName, int defaultValue) {
-        super(propName, defaultValue);
+  public CachedDynamicIntProperty(String propName, int defaultValue) {
+    super(propName, defaultValue);
 
-        // Set the initial value of the cached primitive value.
-        this.primitiveValue = chooseValue();
-    }
+    // Set the initial value of the cached primitive value.
+    this.primitiveValue = chooseValue();
+  }
 
-    @Override
-    protected void propertyChanged() {
-        // Update the cached primitive value when the property is changed.
-        this.primitiveValue = chooseValue();
-    }
+  @Override
+  protected void propertyChanged() {
+    // Update the cached primitive value when the property is changed.
+    this.primitiveValue = chooseValue();
+  }
 
-    /**
-     * Get the current value from the underlying DynamicProperty
-     *
-     * @return
-     */
-    protected int chooseValue() {
-        return prop.getInteger(defaultValue).intValue();
-    }
+  /**
+   * Get the current value from the underlying DynamicProperty
+   *
+   * @return
+   */
+  protected int chooseValue() {
+    return prop.getInteger(defaultValue).intValue();
+  }
 
-    /**
-     * Get the current cached value.
-     *
-     * @return
-     */
-    @Override
-    public int get() {
-        return primitiveValue;
-    }
+  /**
+   * Get the current cached value.
+   *
+   * @return
+   */
+  @Override
+  public int get() {
+    return primitiveValue;
+  }
 
-    @Override
-    public Integer getValue() {
-        return get();
-    }
+  @Override
+  public Integer getValue() {
+    return get();
+  }
 }

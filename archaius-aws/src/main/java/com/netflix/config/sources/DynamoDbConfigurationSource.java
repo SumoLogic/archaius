@@ -28,41 +28,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * User: gorzell
- * Date: 8/6/12
- * This source can be used for basic Dynamo support where there is no scoping of the properties.  It assume that you
- * provide a table with just key value pairs and the last value read wins if there are multiple rows with the same key.
+ * User: gorzell Date: 8/6/12 This source can be used for basic Dynamo support where there is no scoping of the properties. It assume that you provide a table
+ * with just key value pairs and the last value read wins if there are multiple rows with the same key.
  */
 public class DynamoDbConfigurationSource extends AbstractDynamoDbConfigurationSource<Object> implements PolledConfigurationSource {
-    private static final Logger log = LoggerFactory.getLogger(DynamoDbConfigurationSource.class);
+  private static final Logger log = LoggerFactory.getLogger(DynamoDbConfigurationSource.class);
 
-    public DynamoDbConfigurationSource(DynamoDbClient dbClient) {
-        super(dbClient);
-    }
+  public DynamoDbConfigurationSource(DynamoDbClient dbClient) {
+    super(dbClient);
+  }
 
-    @Override
-    protected synchronized Map<String, Object> loadPropertiesFromTable(String table) {
-        Map<String, Object> propertyMap = new HashMap<String, Object>();
-        Map<String, AttributeValue> lastKeysEvaluated = null;
-        do {
-            ScanRequest scanRequest = ScanRequest.builder()
-                    .tableName(table)
-                    .exclusiveStartKey(lastKeysEvaluated)
-                    .build();
-            ScanResponse result = dbScanWithThroughputBackOff(scanRequest);
-            for (Map<String, AttributeValue> item : result.items()) {
-                propertyMap.put(item.get(keyAttributeName.get()).s(), item.get(valueAttributeName.get()).s());
-            }
-            lastKeysEvaluated = result.lastEvaluatedKey();
-        } while (!lastKeysEvaluated.isEmpty());
-        return propertyMap;
-    }
+  @Override
+  protected synchronized Map<String, Object> loadPropertiesFromTable(String table) {
+    Map<String, Object> propertyMap = new HashMap<String, Object>();
+    Map<String, AttributeValue> lastKeysEvaluated = null;
+    do {
+      ScanRequest scanRequest = ScanRequest.builder().tableName(table).exclusiveStartKey(lastKeysEvaluated).build();
+      ScanResponse result = dbScanWithThroughputBackOff(scanRequest);
+      for (Map<String, AttributeValue> item : result.items()) {
+        propertyMap.put(item.get(keyAttributeName.get()).s(), item.get(valueAttributeName.get()).s());
+      }
+      lastKeysEvaluated = result.lastEvaluatedKey();
+    } while (!lastKeysEvaluated.isEmpty());
+    return propertyMap;
+  }
 
-    @Override
-    public PollResult poll(boolean initial, Object checkPoint) throws Exception {
-        String table = tableName.get();
-        Map<String, Object> map = loadPropertiesFromTable(table);
-        log.debug("Successfully polled Dynamo for a new configuration based on table:" + table);
-        return PollResult.createFull(map);
-    }
+  @Override
+  public PollResult poll(boolean initial, Object checkPoint) throws Exception {
+    String table = tableName.get();
+    Map<String, Object> map = loadPropertiesFromTable(table);
+    log.debug("Successfully polled Dynamo for a new configuration based on table:" + table);
+    return PollResult.createFull(map);
+  }
 }

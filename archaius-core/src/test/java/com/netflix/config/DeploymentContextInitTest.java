@@ -20,17 +20,17 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class DeploymentContextInitTest {
-    public static class MyDeploymentContext extends SimpleDeploymentContext {
-        @Override
-        public String getDeploymentEnvironment() {
-            return "myEnv";
-        }
+  public static class MyDeploymentContext extends SimpleDeploymentContext {
+    @Override
+    public String getDeploymentEnvironment() {
+      return "myEnv";
     }
-    
-    @Test
-    public void testDeploymentContextInit() {
-        System.setProperty("archaius.default.deploymentContext.class", MyDeploymentContext.class.getName());
-        assertTrue(ConfigurationManager.getDeploymentContext() instanceof MyDeploymentContext);
-        assertEquals("myEnv", ConfigurationManager.getDeploymentContext().getDeploymentEnvironment());
-    }
+  }
+
+  @Test
+  public void testDeploymentContextInit() {
+    System.setProperty("archaius.default.deploymentContext.class", MyDeploymentContext.class.getName());
+    assertTrue(ConfigurationManager.getDeploymentContext() instanceof MyDeploymentContext);
+    assertEquals("myEnv", ConfigurationManager.getDeploymentContext().getDeploymentEnvironment());
+  }
 }

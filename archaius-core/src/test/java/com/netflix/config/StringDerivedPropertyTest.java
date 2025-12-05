@@ -32,67 +32,65 @@ import static org.junit.Assert.assertTrue;
 
 public class StringDerivedPropertyTest {
 
-    @Test
-    public void testPropertyChanged() {
-        final AtomicBoolean derived = new AtomicBoolean(false);
+  @Test
+  public void testPropertyChanged() {
+    final AtomicBoolean derived = new AtomicBoolean(false);
 
-        final String defaultVal = "hi";
-        StringDerivedProperty<String> p = new StringDerivedProperty<String>("com.netflix.hello", defaultVal, 
-                new Function<String, String>() {
-            @Override
-            public String apply(String input) {
-                derived.set(true);
-                return String.format("%s/derived", input);
-            }
+    final String defaultVal = "hi";
+    StringDerivedProperty<String> p = new StringDerivedProperty<String>("com.netflix.hello", defaultVal, new Function<String, String>() {
+      @Override
+      public String apply(String input) {
+        derived.set(true);
+        return String.format("%s/derived", input);
+      }
 
-        });
+    });
 
-        assertEquals(defaultVal, p.getValue());
-        
-        ConfigurationManager.getConfigInstance().setProperty("com.netflix.hello", "archaius");
-        
-        assertTrue("derive() was not called", derived.get());
-        
-        assertEquals(String.format("%s/derived", "archaius"), p.getValue());
-    }
+    assertEquals(defaultVal, p.getValue());
 
-    @Test
-    public void testPropertyChangedWhenDeriveThrowsException() {
-        final String defaultVal = "hi";
-        StringDerivedProperty<String> p = new StringDerivedProperty<String>("com.netflix.test", defaultVal, 
-                new Function<String, String>() {
-            @Override
-            public String apply(String input) {
-                throw new RuntimeException("oops");
-            }
-        });
+    ConfigurationManager.getConfigInstance().setProperty("com.netflix.hello", "archaius");
 
-        ConfigurationManager.getConfigInstance().setProperty("com.netflix.test", "xyz");
-        assertEquals("hi", p.getValue());
-    }
-    
-    @Test
-    public void testCalendar() {
-        Date now = new Date();
-        StringDerivedProperty<Date> calendarProperty = new StringDerivedProperty<Date>("myproperty", now, new Function<String, Date>() {
-            @Override
-            public Date apply(@Nullable String input) {
-                Date d = new Date();
-                try {
-                    d.setTime(Long.parseLong(input));
-                } catch (Exception e) {
-                    return new Date(0);
-                }
-                return d;
-            }            
-        });
-        assertEquals(now, calendarProperty.getValue());
-        
-        Date newTime = new Date();
-        newTime.setTime(now.getTime() + 60000);
-        
-        ConfigurationManager.getConfigInstance().setProperty("myproperty", String.valueOf(newTime.getTime()));
-        assertEquals(newTime, calendarProperty.getValue());
-    }
+    assertTrue("derive() was not called", derived.get());
+
+    assertEquals(String.format("%s/derived", "archaius"), p.getValue());
+  }
+
+  @Test
+  public void testPropertyChangedWhenDeriveThrowsException() {
+    final String defaultVal = "hi";
+    StringDerivedProperty<String> p = new StringDerivedProperty<String>("com.netflix.test", defaultVal, new Function<String, String>() {
+      @Override
+      public String apply(String input) {
+        throw new RuntimeException("oops");
+      }
+    });
+
+    ConfigurationManager.getConfigInstance().setProperty("com.netflix.test", "xyz");
+    assertEquals("hi", p.getValue());
+  }
+
+  @Test
+  public void testCalendar() {
+    Date now = new Date();
+    StringDerivedProperty<Date> calendarProperty = new StringDerivedProperty<Date>("myproperty", now, new Function<String, Date>() {
+      @Override
+      public Date apply(@Nullable String input) {
+        Date d = new Date();
+        try {
+          d.setTime(Long.parseLong(input));
+        } catch (Exception e) {
+          return new Date(0);
+        }
+        return d;
+      }
+    });
+    assertEquals(now, calendarProperty.getValue());
+
+    Date newTime = new Date();
+    newTime.setTime(now.getTime() + 60000);
+
+    ConfigurationManager.getConfigInstance().setProperty("myproperty", String.valueOf(newTime.getTime()));
+    assertEquals(newTime, calendarProperty.getValue());
+  }
 
 }

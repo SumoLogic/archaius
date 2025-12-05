@@ -26,55 +26,55 @@ import static com.netflix.config.sources.DynamoDbIntegrationTestHelper.*;
 import static org.junit.Assert.assertEquals;
 
 /**
- * User: gorzell
- * Date: 8/23/12
+ * User: gorzell Date: 8/23/12
  */
 public class DynamoBackedConfigurationIntegrationTest {
-    private static final String tableName = DynamoDbConfigurationSource.defaultTable + "UNITTEST";
-    private static DynamoDbClient dbClient;
+  private static final String tableName = DynamoDbConfigurationSource.defaultTable + "UNITTEST";
+  private static DynamoDbClient dbClient;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        try {
-            dbClient = DynamoDbClient.builder().credentialsProvider(DefaultCredentialsProvider.create()).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.setProperty("com.netflix.config.dynamo.tableName", tableName);
-        if (dbClient != null) {
-            createTable(dbClient, tableName);
-            addElements(dbClient, tableName);
-        }
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    try {
+      dbClient = DynamoDbClient.builder().credentialsProvider(DefaultCredentialsProvider.create()).build();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (dbClient != null) removeTable(dbClient, tableName);
+    System.setProperty("com.netflix.config.dynamo.tableName", tableName);
+    if (dbClient != null) {
+      createTable(dbClient, tableName);
+      addElements(dbClient, tableName);
     }
+  }
 
-    // @Test // disabled as it requires additional setup
-    public void testPropertyChange() throws Exception{
-        System.setProperty("com.netflix.config.dynamo.tableName", tableName);
-        if (dbClient != null) {
-            DynamoDbConfigurationSource source = new DynamoDbConfigurationSource(dbClient);
-            FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(0, 1000, false);
-            DynamicConfiguration dynamicConfig = new DynamicConfiguration(source, scheduler);
-            ConfigurationManager.loadPropertiesFromConfiguration(dynamicConfig);
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    if (dbClient != null)
+      removeTable(dbClient, tableName);
+  }
 
-            DynamicStringProperty test1 = DynamicPropertyFactory.getInstance().getStringProperty("test1","");
-            DynamicStringProperty test2 = DynamicPropertyFactory.getInstance().getStringProperty("test2","");
-            DynamicStringProperty test3 = DynamicPropertyFactory.getInstance().getStringProperty("test3","");
+  // @Test // disabled as it requires additional setup
+  public void testPropertyChange() throws Exception {
+    System.setProperty("com.netflix.config.dynamo.tableName", tableName);
+    if (dbClient != null) {
+      DynamoDbConfigurationSource source = new DynamoDbConfigurationSource(dbClient);
+      FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(0, 1000, false);
+      DynamicConfiguration dynamicConfig = new DynamicConfiguration(source, scheduler);
+      ConfigurationManager.loadPropertiesFromConfiguration(dynamicConfig);
 
-            assertEquals("val1", test1.get());
-            assertEquals("val2", test2.get());
-            assertEquals("val3", test3.get());
+      DynamicStringProperty test1 = DynamicPropertyFactory.getInstance().getStringProperty("test1", "");
+      DynamicStringProperty test2 = DynamicPropertyFactory.getInstance().getStringProperty("test2", "");
+      DynamicStringProperty test3 = DynamicPropertyFactory.getInstance().getStringProperty("test3", "");
 
-            updateValues(dbClient, tableName);
-            Thread.sleep(5000);
+      assertEquals("val1", test1.get());
+      assertEquals("val2", test2.get());
+      assertEquals("val3", test3.get());
 
-            assertEquals("vala", test1.get());
-            assertEquals("valb", test2.get());
-            assertEquals("valc", test3.get());
-        }
+      updateValues(dbClient, tableName);
+      Thread.sleep(5000);
+
+      assertEquals("vala", test1.get());
+      assertEquals("valb", test2.get());
+      assertEquals("valc", test3.get());
     }
+  }
 }

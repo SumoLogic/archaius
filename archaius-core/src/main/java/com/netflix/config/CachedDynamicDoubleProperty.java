@@ -18,50 +18,49 @@ package com.netflix.config;
 /**
  * An implementation of {@link DynamicDoubleProperty} that caches the primitive value whenever it is changed.
  *
- * This can give improved performance due to avoiding the unboxing, at the expense of additional
- * memory usage.
+ * This can give improved performance due to avoiding the unboxing, at the expense of additional memory usage.
  *
  * @author Mike Smith
  *
  */
 public class CachedDynamicDoubleProperty extends DynamicDoubleProperty {
 
-    protected volatile double primitiveValue;
+  protected volatile double primitiveValue;
 
-    public CachedDynamicDoubleProperty(String propName, double defaultValue) {
-        super(propName, defaultValue);
+  public CachedDynamicDoubleProperty(String propName, double defaultValue) {
+    super(propName, defaultValue);
 
-        // Set the initial value of the cached primitive value.
-        this.primitiveValue = chooseValue();
-    }
+    // Set the initial value of the cached primitive value.
+    this.primitiveValue = chooseValue();
+  }
 
-    @Override
-    protected void propertyChanged() {
-        // Update the cached primitive value when the property is changed.
-        this.primitiveValue = chooseValue();
-    }
+  @Override
+  protected void propertyChanged() {
+    // Update the cached primitive value when the property is changed.
+    this.primitiveValue = chooseValue();
+  }
 
-    /**
-     * Get the current value from the underlying DynamicProperty
-     *
-     * @return
-     */
-    protected double chooseValue() {
-        return prop.getDouble(defaultValue).doubleValue();
-    }
+  /**
+   * Get the current value from the underlying DynamicProperty
+   *
+   * @return
+   */
+  protected double chooseValue() {
+    return prop.getDouble(defaultValue).doubleValue();
+  }
 
-    /**
-     * Get the current cached value.
-     *
-     * @return
-     */
-    @Override
-    public double get() {
-        return primitiveValue;
-    }
+  /**
+   * Get the current cached value.
+   *
+   * @return
+   */
+  @Override
+  public double get() {
+    return primitiveValue;
+  }
 
-    @Override
-    public Double getValue() {
-        return get();
-    }
+  @Override
+  public Double getValue() {
+    return get();
+  }
 }

@@ -21,14 +21,14 @@ import static org.junit.Assert.assertEquals;
 
 public class CascadedPropertiesWithDeploymentContextTest {
 
-    @Test
-    public void testLoadCascadedPropertiesConfigDeployment() throws Exception {
-        ConfigurationManager.getConfigInstance().setProperty(ConfigurationBasedDeploymentContext.DEPLOYMENT_ENVIRONMENT_PROPERTY, "test");
-        ConfigurationManager.getConfigInstance().setProperty(ConfigurationBasedDeploymentContext.DEPLOYMENT_REGION_PROPERTY, "us-east-1");
-        ConfigurationManager.loadCascadedPropertiesFromResources("test");
-        assertEquals("9", ConfigurationManager.getConfigInstance().getProperty("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
-        assertEquals("1", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
-        ConfigurationManager.loadAppOverrideProperties("override");
-        assertEquals("200", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
-    }
+  @Test
+  public void testLoadCascadedPropertiesConfigDeployment() throws Exception {
+    ConfigurationManager.getConfigInstance().setProperty(ConfigurationBasedDeploymentContext.DEPLOYMENT_ENVIRONMENT_PROPERTY, "test");
+    ConfigurationManager.getConfigInstance().setProperty(ConfigurationBasedDeploymentContext.DEPLOYMENT_REGION_PROPERTY, "us-east-1");
+    ConfigurationManager.loadCascadedPropertiesFromResources("test");
+    assertEquals("9", ConfigurationManager.getConfigInstance().getProperty("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
+    assertEquals("1", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
+    ConfigurationManager.loadAppOverrideProperties("override");
+    assertEquals("200", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
+  }
 }

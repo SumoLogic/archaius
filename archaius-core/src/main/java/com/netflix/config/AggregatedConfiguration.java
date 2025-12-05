@@ -22,25 +22,25 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 
 public interface AggregatedConfiguration extends Configuration {
-    public void addConfiguration(AbstractConfiguration config);
-    
-    public void addConfiguration(AbstractConfiguration config, String name);
-    
-    public Set<String> getConfigurationNames();
-    
-    public List<String> getConfigurationNameList();
-    
-    public Configuration getConfiguration(String name);
-    
-    public int getNumberOfConfigurations();
-    
-    public Configuration getConfiguration(int index);
-    
-    public List<AbstractConfiguration> getConfigurations();
-    
-    public Configuration removeConfiguration(String name);
-    
-    public boolean removeConfiguration(Configuration config);
-    
-    public Configuration removeConfigurationAt(int index);
+  public void addConfiguration(AbstractConfiguration config);
+
+  public void addConfiguration(AbstractConfiguration config, String name);
+
+  public Set<String> getConfigurationNames();
+
+  public List<String> getConfigurationNameList();
+
+  public Configuration getConfiguration(String name);
+
+  public int getNumberOfConfigurations();
+
+  public Configuration getConfiguration(int index);
+
+  public List<AbstractConfiguration> getConfigurations();
+
+  public Configuration removeConfiguration(String name);
+
+  public boolean removeConfiguration(Configuration config);
+
+  public Configuration removeConfigurationAt(int index);
 }

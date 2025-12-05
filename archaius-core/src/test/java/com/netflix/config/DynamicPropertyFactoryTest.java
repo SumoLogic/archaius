@@ -22,10 +22,10 @@ import org.junit.Test;
 
 public class DynamicPropertyFactoryTest {
 
-    @Test
-    public void testGetSource() {
-        Object defaultConfig = DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
-        assertTrue(defaultConfig instanceof ConcurrentCompositeConfiguration);
-        assertTrue(DynamicPropertyFactory.isInitializedWithDefaultConfig());
-    }
+  @Test
+  public void testGetSource() {
+    Object defaultConfig = DynamicPropertyFactory.getInstance().getBackingConfigurationSource();
+    assertTrue(defaultConfig instanceof ConcurrentCompositeConfiguration);
+    assertTrue(DynamicPropertyFactory.isInitializedWithDefaultConfig());
+  }
 }

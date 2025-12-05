@@ -27,57 +27,57 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigurationManagerTest {
 
-    static DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty("prop1", null);
-    
-    @Test
-    public void testInstall() {
-        ConfigurationManager.getConfigInstance().setProperty("prop1", "abc");
-        assertEquals("abc", ConfigurationManager.getConfigInstance().getProperty("prop1"));
-        assertEquals("abc", prop1.get());
-        BaseConfiguration newConfig = new BaseConfiguration();
-        newConfig.setProperty("prop1", "fromNewConfig");
-        ConfigurationManager.install(newConfig);
-        assertEquals("fromNewConfig", ConfigurationManager.getConfigInstance().getProperty("prop1"));
-        assertEquals("fromNewConfig", prop1.get());
-        newConfig.setProperty("prop1", "changed");
-        assertEquals("changed", ConfigurationManager.getConfigInstance().getProperty("prop1"));
-        assertEquals("changed", prop1.get());
-        try {
-            ConfigurationManager.install(new BaseConfiguration());
-            fail("IllegalStateExceptionExpected");
-        } catch (IllegalStateException e) {
-            assertNotNull(e);
-        }
-        try {
-            DynamicPropertyFactory.initWithConfigurationSource(new BaseConfiguration());
-            fail("IllegalStateExceptionExpected");
-        } catch (IllegalStateException e) {
-            assertNotNull(e);
-        }
+  static DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty("prop1", null);
+
+  @Test
+  public void testInstall() {
+    ConfigurationManager.getConfigInstance().setProperty("prop1", "abc");
+    assertEquals("abc", ConfigurationManager.getConfigInstance().getProperty("prop1"));
+    assertEquals("abc", prop1.get());
+    BaseConfiguration newConfig = new BaseConfiguration();
+    newConfig.setProperty("prop1", "fromNewConfig");
+    ConfigurationManager.install(newConfig);
+    assertEquals("fromNewConfig", ConfigurationManager.getConfigInstance().getProperty("prop1"));
+    assertEquals("fromNewConfig", prop1.get());
+    newConfig.setProperty("prop1", "changed");
+    assertEquals("changed", ConfigurationManager.getConfigInstance().getProperty("prop1"));
+    assertEquals("changed", prop1.get());
+    try {
+      ConfigurationManager.install(new BaseConfiguration());
+      fail("IllegalStateExceptionExpected");
+    } catch (IllegalStateException e) {
+      assertNotNull(e);
     }
-    
-    @Test
-    public void testLoadProperties() throws Exception {
-        ConfigurationManager.loadPropertiesFromResources("test.properties");
-        assertEquals("5", ConfigurationManager.getConfigInstance().getProperty("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
+    try {
+      DynamicPropertyFactory.initWithConfigurationSource(new BaseConfiguration());
+      fail("IllegalStateExceptionExpected");
+    } catch (IllegalStateException e) {
+      assertNotNull(e);
     }
-    
-    @Test
-    public void testLoadChineseProperties() throws Exception {
-        ConfigurationManager.loadPropertiesFromResources("test-chinese.properties");
-        assertEquals("\u4E2D\u6587\u6D4B\u8BD5", ConfigurationManager.getConfigInstance().getProperty("subject"));
-    }
-    
-    @Test
-    public void testLoadCascadedProperties() throws Exception {
-        SimpleDeploymentContext context = new SimpleDeploymentContext();
-        context.setDeploymentEnvironment("test");
-        context.setDeploymentRegion("us-east-1");
-        ConfigurationManager.setDeploymentContext(context);
-        ConfigurationManager.loadCascadedPropertiesFromResources("test");
-        assertEquals("9", ConfigurationManager.getConfigInstance().getProperty("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
-        assertEquals("1", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
-        ConfigurationManager.loadAppOverrideProperties("override");
-        assertEquals("200", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
-    }
+  }
+
+  @Test
+  public void testLoadProperties() throws Exception {
+    ConfigurationManager.loadPropertiesFromResources("test.properties");
+    assertEquals("5", ConfigurationManager.getConfigInstance().getProperty("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
+  }
+
+  @Test
+  public void testLoadChineseProperties() throws Exception {
+    ConfigurationManager.loadPropertiesFromResources("test-chinese.properties");
+    assertEquals("\u4E2D\u6587\u6D4B\u8BD5", ConfigurationManager.getConfigInstance().getProperty("subject"));
+  }
+
+  @Test
+  public void testLoadCascadedProperties() throws Exception {
+    SimpleDeploymentContext context = new SimpleDeploymentContext();
+    context.setDeploymentEnvironment("test");
+    context.setDeploymentRegion("us-east-1");
+    ConfigurationManager.setDeploymentContext(context);
+    ConfigurationManager.loadCascadedPropertiesFromResources("test");
+    assertEquals("9", ConfigurationManager.getConfigInstance().getProperty("com.netflix.config.samples.SampleApp.SampleBean.numSeeds"));
+    assertEquals("1", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
+    ConfigurationManager.loadAppOverrideProperties("override");
+    assertEquals("200", ConfigurationManager.getConfigInstance().getProperty("cascaded.property"));
+  }
 }

@@ -16,67 +16,63 @@
 package com.netflix.config;
 
 /**
- * An interface to define the deployment context of an application. All attributes
- * are optional and may return null if unset.
+ * An interface to define the deployment context of an application. All attributes are optional and may return null if unset.
  */
 public interface DeploymentContext {
-    
-    public enum ContextKey {
-        environment("@environment"), datacenter("@datacenter"), appId("@appId"),
-        serverId("@serverId"), stack("@stack"), region("@region"), zone("@zone");
-        
-        private String key;
-        
-        ContextKey(String key) {
-            this.key = key;
-        }
-        
-        public String getKey() {
-            return key;
-        }
+
+  public enum ContextKey {
+    environment("@environment"), datacenter("@datacenter"), appId("@appId"), serverId("@serverId"), stack("@stack"), region("@region"), zone("@zone");
+
+    private String key;
+
+    ContextKey(String key) {
+      this.key = key;
     }
-    
-    /**
-     * @return the deployment environment. For example "test", "dev", "prod".
-     */
-    public String getDeploymentEnvironment();
 
-    public void setDeploymentEnvironment(String env);
+    public String getKey() {
+      return key;
+    }
+  }
 
-    /**
-     * @return the name or ID of the data center.
-     */
-    public String getDeploymentDatacenter();
+  /**
+   * @return the deployment environment. For example "test", "dev", "prod".
+   */
+  public String getDeploymentEnvironment();
 
-    public void setDeploymentDatacenter(String deployedAt);
+  public void setDeploymentEnvironment(String env);
 
-    public String getApplicationId();
+  /**
+   * @return the name or ID of the data center.
+   */
+  public String getDeploymentDatacenter();
 
-    public void setApplicationId(String appId);
+  public void setDeploymentDatacenter(String deployedAt);
 
-    public void setDeploymentServerId(String serverId);
+  public String getApplicationId();
 
-    public String getDeploymentServerId();
+  public void setApplicationId(String appId);
 
-    /**
-     * 
-     * @return a vertical stack name where this application is deployed. The stack name
-     * can be used to affect the application's behavior.
-     */
-    public String getDeploymentStack();
-    
-    public String getValue(ContextKey key);
-    
-    public void setValue(ContextKey key, String value);
+  public void setDeploymentServerId(String serverId);
 
-    public void setDeploymentStack(String stack);
+  public String getDeploymentServerId();
 
-    /**
-     * 
-     * @return region of the deployment. In EC2, this could be 
-     * Amazon region "us-east-1", "us-west-1", etc.
-     */
-    public String getDeploymentRegion();
+  /**
+   * 
+   * @return a vertical stack name where this application is deployed. The stack name can be used to affect the application's behavior.
+   */
+  public String getDeploymentStack();
 
-    public void setDeploymentRegion(String region);    
+  public String getValue(ContextKey key);
+
+  public void setValue(ContextKey key, String value);
+
+  public void setDeploymentStack(String stack);
+
+  /**
+   * 
+   * @return region of the deployment. In EC2, this could be Amazon region "us-east-1", "us-west-1", etc.
+   */
+  public String getDeploymentRegion();
+
+  public void setDeploymentRegion(String region);
 }
