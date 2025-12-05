@@ -1,14 +1,22 @@
-//plugins {
-//    id 'nebula.netflixoss' version '7.1.3'
-//    id 'nebula.provided-base' version '5.0.3'
-//}
+plugins {
+    id "com.diffplug.spotless" version "8.1.0"
+}
+
+repositories {
+    mavenCentral()
+}
+
+spotless {
+    java {
+        target 'archaius-*/src/**/*.java'
+        eclipse().configFile('eclipse-formatter.xml')
+    }
+}
 
 // Establish version and status
 ext.githubProjectName = rootProject.name // Change if github project name is not the same as the root project's name
 
 subprojects {
-//    apply plugin: 'nebula.netflixoss'
-//    apply plugin: 'nebula.provided-base'
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
 

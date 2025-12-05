@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<profiles version="23">
+  <profile kind="CodeFormatterProfile" name="archaius" version="18">
+    <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="160"/>
+    <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
+    <setting id="org.eclipse.jdt.core.formatter.tabulation.size" value="2"/>
+    <setting id="org.eclipse.jdt.core.formatter.indentation.size" value="2"/>
+    <setting id="org.eclipse.jdt.core.formatter.continuation_indentation" value="1"/>
+    <setting id="org.eclipse.jdt.core.formatter.continuation_indentation_for_array_initializer" value="1"/>
+    <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="160"/>
+    <setting id="org.eclipse.jdt.core.formatter.use_tabs_only_for_leading_indentations" value="false"/>
+    <setting id="org.eclipse.jdt.core.formatter.wrap_before_binary_operator" value="true"/>
+    <setting id="org.eclipse.jdt.core.formatter.wrap_before_relational_operator" value="true"/>
+  </profile>
+</profiles>
